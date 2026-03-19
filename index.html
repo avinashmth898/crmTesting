@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#1e3a5f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Vidyalaya CRM"/>
+<title>Vidyalaya CRM — School Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ═══ RESET ═══ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#1e3a5f;--navy2:#2d5282;--navy3:#ebf4ff;
+  --indigo:#4f46e5;--indigo2:#eef2ff;
+  --gold:#f59e0b;--gold2:#fffbeb;
+  --emerald:#059669;--emerald2:#d1fae5;
+  --rose:#e11d48;--rose2:#fff1f2;
+  --sky:#0284c7;--sky2:#e0f2fe;
+  --violet:#7c3aed;--violet2:#f5f3ff;
+  --slate:#64748b;--slate2:#f8fafc;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --bg:#f1f5f9;--card:#ffffff;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.08),0 2px 4px -1px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);
+  --r:12px;--r-sm:8px;--r-lg:16px;
+  --font:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-display:'Playfair Display',serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:260px;
+  background:var(--navy);z-index:300;
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:4px 0 20px rgba(0,0,0,.2);
+}
+.sidebar.open{transform:none}
+.sidebar-header{
+  padding:20px;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.sidebar-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sidebar-logo-icon{
+  width:40px;height:40px;background:var(--gold);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.sidebar-school{font-size:14px;font-weight:700;color:#fff;line-height:1.2}
+.sidebar-tagline{font-size:11px;color:rgba(255,255,255,.5)}
+.sidebar-session{
+  display:inline-block;margin-top:8px;padding:3px 10px;
+  background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.3);
+  border-radius:20px;font-size:11px;color:var(--gold);font-weight:600;
+}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0}
+.sidebar-nav::-webkit-scrollbar{width:3px}
+.sidebar-nav::-webkit-scrollbar-track{background:transparent}
+.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.nav-section{padding:8px 16px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;cursor:pointer;
+  color:rgba(255,255,255,.7);font-size:13px;font-weight:500;
+  border-left:3px solid transparent;transition:all .2s;margin:1px 0;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(79,70,229,.3);color:#fff;border-left-color:var(--gold)}
+.nav-item-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-item-badge{
+  margin-left:auto;background:var(--rose);color:#fff;
+  font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;
+}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-user{display:flex;align-items:center;gap:10px}
+.sidebar-avatar{
+  width:36px;height:36px;background:var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0;
+}
+.sidebar-uname{font-size:13px;font-weight:600;color:#fff}
+.sidebar-role{font-size:11px;color:rgba(255,255,255,.5)}
+
+/* ═══ OVERLAY ═══ */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;
+}
+.sidebar-overlay.show{display:block}
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;height:56px;
+  box-shadow:var(--shadow);
+}
+.topbar-menu{
+  width:36px;height:36px;border:none;background:none;cursor:pointer;
+  display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;
+  border-radius:8px;transition:background .2s;flex-shrink:0;
+}
+.topbar-menu:hover{background:var(--slate2)}
+.topbar-menu span{width:18px;height:2px;background:var(--text);border-radius:1px;transition:all .3s}
+.topbar-title{flex:1;padding:0 12px}
+.topbar-page{font-size:15px;font-weight:700;color:var(--text)}
+.topbar-breadcrumb{font-size:11px;color:var(--text3)}
+.topbar-actions{display:flex;gap:6px;align-items:center}
+.topbar-btn{
+  width:36px;height:36px;border:none;background:none;cursor:pointer;
+  border-radius:8px;font-size:18px;display:flex;align-items:center;justify-content:center;
+  color:var(--text2);transition:background .2s;position:relative;
+}
+.topbar-btn:hover{background:var(--slate2)}
+.notif-dot{
+  position:absolute;top:6px;right:6px;width:8px;height:8px;
+  background:var(--rose);border-radius:50%;border:2px solid #fff;
+}
+
+/* ═══ MAIN CONTENT ═══ */
+.main{padding:72px 0 80px}
+.page{display:none;padding:16px}
+.page.active{display:block;animation:fadeSlide .25s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ═══ BOTTOM NAV ═══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;z-index:200;
+  padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -2px 10px rgba(0,0,0,.06);
+}
+.bnav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 4px 6px;cursor:pointer;border:none;background:none;
+  color:var(--text3);font-size:9px;font-weight:600;gap:3px;
+  letter-spacing:.03em;text-transform:uppercase;transition:color .2s;
+}
+.bnav-item.active{color:var(--indigo)}
+.bnav-item svg{width:20px;height:20px}
+
+/* ═══ CARDS ═══ */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-title{font-size:14px;font-weight:700;color:var(--text)}
+.card-body{padding:16px}
+
+/* ═══ STAT CARDS ═══ */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{
+  background:var(--card);border-radius:var(--r);padding:14px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.08}
+.stat-card.navy::before{background:var(--navy)}
+.stat-card.gold::before{background:var(--gold)}
+.stat-card.emerald::before{background:var(--emerald)}
+.stat-card.rose::before{background:var(--rose)}
+.stat-card.sky::before{background:var(--sky)}
+.stat-card.violet::before{background:var(--violet)}
+.stat-icon{font-size:20px;margin-bottom:8px}
+.stat-val{font-size:22px;font-weight:800;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text3);margin-top:3px;font-weight:500}
+.stat-sub{font-size:11px;font-weight:600;margin-top:4px}
+.stat-sub.up{color:var(--emerald)}
+.stat-sub.down{color:var(--rose)}
+
+/* ═══ FORMS ═══ */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);font-size:14px;color:var(--text);
+  background:#fff;font-family:var(--font);transition:all .2s;
+  appearance:none;-webkit-appearance:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(79,70,229,.1);
+}
+.form-textarea{resize:vertical;min-height:72px;line-height:1.5}
+.form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.form-hint{font-size:11px;color:var(--text3);margin-top:3px}
+.form-check{display:flex;align-items:center;gap:8px;cursor:pointer}
+.form-check input{width:16px;height:16px;accent-color:var(--indigo)}
+
+/* ═══ BUTTONS ═══ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 18px;border-radius:var(--r-sm);font-size:13px;
+  font-weight:600;border:none;cursor:pointer;transition:all .15s;
+  font-family:var(--font);text-decoration:none;white-space:nowrap;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--indigo);color:#fff}
+.btn-primary:hover{background:#4338ca}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy2)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-emerald{background:var(--emerald);color:#fff}
+.btn-rose{background:var(--rose);color:#fff}
+.btn-ghost{background:var(--slate2);color:var(--text2)}
+.btn-ghost:hover{background:var(--border)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.btn-xs{padding:4px 8px;font-size:11px;border-radius:5px}
+.btn-block{width:100%}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:8px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ═══ BADGES ═══ */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-navy{background:var(--navy3);color:var(--navy)}
+.badge-gold{background:var(--gold2);color:#92400e}
+.badge-emerald{background:var(--emerald2);color:#065f46}
+.badge-rose{background:var(--rose2);color:#9f1239}
+.badge-sky{background:var(--sky2);color:#075985}
+.badge-violet{background:var(--violet2);color:#5b21b6}
+.badge-slate{background:var(--slate2);color:var(--slate)}
+
+/* ═══ TABLE ═══ */
+.tbl-wrap{overflow-x:auto;margin:-2px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:400px}
+thead th{background:var(--navy);color:#fff;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tbody tr:hover td{background:var(--slate2)}
+tbody tr:last-child td{border:none}
+tbody tr:nth-child(even) td{background:#fafafa}
+tbody tr:nth-child(even):hover td{background:var(--slate2)}
+
+/* ═══ SEARCH ═══ */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+.search-input{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;background:#fff;font-family:var(--font)}
+.search-input:focus{outline:none;border-color:var(--indigo)}
+
+/* ═══ TABS ═══ */
+.tabs{display:flex;gap:2px;background:var(--slate2);border-radius:var(--r-sm);padding:3px;margin-bottom:14px;overflow-x:auto}
+.tab{flex:1;padding:7px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text3);white-space:nowrap;transition:all .2s;text-align:center}
+.tab.active{background:#fff;color:var(--indigo);box-shadow:var(--shadow)}
+
+/* ═══ CHIPS ═══ */
+.chip-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .15s;color:var(--text2)}
+.chip.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:400;align-items:flex-end;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{width:100%;background:#fff;border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);padding-bottom:env(safe-area-inset-bottom)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 2px}
+.modal-header{padding:4px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.modal-title{font-size:16px;font-weight:800;color:var(--text)}
+.modal-close{background:var(--slate2);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
+.modal-body{padding:16px 18px 24px}
+
+/* ═══ CONFIRM DIALOG ═══ */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:#fff;border-radius:var(--r);padding:22px;max-width:320px;width:100%;box-shadow:var(--shadow-lg);animation:popIn .2s ease}
+@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.confirm-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.confirm-body{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px}
+.confirm-actions{display:flex;gap:8px}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(8px);background:#1e293b;color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:600;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+/* ═══ EMPTY STATE ═══ */
+.empty{text-align:center;padding:36px 20px;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:10px}
+.empty-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.empty-desc{font-size:13px}
+
+/* ═══ SECTION LABEL ═══ */
+.section-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px}
+.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:12px}
+
+/* ═══ DIVIDER ═══ */
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* ═══ LIST ITEMS ═══ */
+.list-item{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:#fff;border-radius:var(--r);box-shadow:var(--shadow);
+  margin-bottom:8px;cursor:pointer;transition:box-shadow .2s;
+}
+.list-item:active{box-shadow:var(--shadow-md)}
+.list-avatar{
+  width:42px;height:42px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;font-family:var(--font-display);
+}
+.list-info{flex:1;min-width:0}
+.list-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.list-right{text-align:right;flex-shrink:0}
+
+/* ═══ ALERT BOX ═══ */
+.alert{border-radius:var(--r-sm);padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start}
+.alert-navy{background:var(--navy3);border-left:4px solid var(--navy)}
+.alert-gold{background:var(--gold2);border-left:4px solid var(--gold)}
+.alert-rose{background:var(--rose2);border-left:4px solid var(--rose)}
+.alert-emerald{background:var(--emerald2);border-left:4px solid var(--emerald)}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-text{font-size:13px;color:var(--text);line-height:1.4}
+.alert-title{font-weight:700;margin-bottom:2px}
+
+/* ═══ FAB ═══ */
+.fab{
+  position:fixed;bottom:68px;right:16px;
+  width:52px;height:52px;border-radius:26px;
+  background:var(--indigo);color:#fff;border:none;
+  font-size:24px;cursor:pointer;z-index:100;
+  box-shadow:0 4px 14px rgba(79,70,229,.4);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .2s;
+}
+.fab:active{transform:scale(.92);box-shadow:0 2px 8px rgba(79,70,229,.3)}
+
+/* ═══ PROGRESS BAR ═══ */
+.progress{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar{height:100%;border-radius:3px;transition:width .3s}
+
+/* ═══ ATTENDANCE GRID ═══ */
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px}
+.att-day{width:100%;aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.att-p{background:var(--emerald2);color:var(--emerald)}
+.att-a{background:var(--rose2);color:var(--rose)}
+.att-l{background:var(--gold2);color:var(--gold)}
+.att-h{background:var(--slate2);color:var(--slate)}
+.att-none{background:var(--border);color:var(--text3)}
+
+/* ═══ FEE STATUS INDICATOR ═══ */
+.fee-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.fee-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fee-paid .fee-dot{background:var(--emerald)}
+.fee-partial .fee-dot{background:var(--gold)}
+.fee-pending .fee-dot{background:var(--rose)}
+
+/* ═══ PRINT ═══ */
+@media print{
+  .no-print{display:none!important}
+  .print-only{display:block!important}
+  .topbar,.sidebar,.bottom-nav,.fab{display:none!important}
+  body{background:#fff}
+  .main{padding:0}
+  .page{padding:0}
+}
+.print-only{display:none}
+
+/* ═══ MISC ═══ */
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.text-right{text-align:right}
+.text-center{text-align:center}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.text-sm{font-size:13px;color:var(--text2)}
+.text-xs{font-size:11px;color:var(--text3)}
+.mt-4{margin-top:4px}
+.mt-8{margin-top:8px}
+.mt-12{margin-top:12px}
+.mb-8{margin-bottom:8px}
+.gap-8{gap:8px}
+.highlight{background:var(--indigo2);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:12px}
+.highlight.gold{background:var(--gold2)}
+.highlight.rose{background:var(--rose2)}
+.highlight.emerald{background:var(--emerald2)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏫</div>
+      <div>
+        <div class="sidebar-school" id="sb-school-name">Vidyalaya CRM</div>
+        <div class="sidebar-tagline">School Management</div>
+      </div>
+    </div>
+    <div class="sidebar-session" id="sb-session">Session 2024-25</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-item-icon">📊</span>Dashboard</div>
+    <div class="nav-section">Students</div>
+    <div class="nav-item" onclick="navTo('students',this)"><span class="nav-item-icon">👨‍🎓</span>Students</div>
+    <div class="nav-item" onclick="navTo('admission',this)"><span class="nav-item-icon">📝</span>Admission</div>
+    <div class="nav-item" onclick="navTo('readmission',this)"><span class="nav-item-icon">🔄</span>Readmission</div>
+    <div class="nav-section">Academic</div>
+    <div class="nav-item" onclick="navTo('attendance',this)"><span class="nav-item-icon">✅</span>Attendance</div>
+    <div class="nav-item" onclick="navTo('exams',this)"><span class="nav-item-icon">📋</span>Exams & Results</div>
+    <div class="nav-section">Finance</div>
+    <div class="nav-item" onclick="navTo('fees',this)"><span class="nav-item-icon">💰</span>Fee Management<span class="nav-item-badge" id="defaulter-badge">0</span></div>
+    <div class="nav-item" onclick="navTo('feestructure',this)"><span class="nav-item-icon">🏷️</span>Fee Structure</div>
+    <div class="nav-section">Staff</div>
+    <div class="nav-item" onclick="navTo('teachers',this)"><span class="nav-item-icon">👩‍🏫</span>Teachers</div>
+    <div class="nav-item" onclick="navTo('salary',this)"><span class="nav-item-icon">💳</span>Salary</div>
+    <div class="nav-section">Transport</div>
+    <div class="nav-item" onclick="navTo('transport',this)"><span class="nav-item-icon">🚌</span>Transport</div>
+    <div class="nav-section">Reports</div>
+    <div class="nav-item" onclick="navTo('reports',this)"><span class="nav-item-icon">📈</span>Reports</div>
+    <div class="nav-section">System</div>
+    <div class="nav-item" onclick="navTo('student-portal',this)"><span class="nav-item-icon">🎓</span>Student Portal</div>
+    <div class="nav-item" onclick="navTo('settings',this)"><span class="nav-item-icon">⚙️</span>Settings</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-avatar">A</div>
+      <div>
+        <div class="sidebar-uname" id="sb-uname">Admin</div>
+        <div class="sidebar-role">School Administrator</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- TOPBAR -->
+<header class="topbar no-print">
+  <button class="topbar-menu" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-title">
+    <div class="topbar-page" id="topbar-page">Dashboard</div>
+    <div class="topbar-breadcrumb" id="topbar-bc">Vidyalaya CRM</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="topbar-btn" onclick="navTo('fees',null)" title="Fee Alerts">
+      💰<span class="notif-dot" id="fee-notif" style="display:none"></span>
+    </button>
+    <button class="topbar-btn" onclick="exportData()" title="Backup">📤</button>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div class="page active" id="page-dashboard">
+  <div id="dash-alerts"></div>
+  <div class="stat-grid" id="dash-stats"></div>
+  <div class="section-label">Quick Actions</div>
+  <div class="btn-group mb-8" style="margin-bottom:12px">
+    <button class="btn btn-navy btn-sm" onclick="navTo('attendance',null)">✅ Mark Attendance</button>
+    <button class="btn btn-gold btn-sm" onclick="navTo('fees',null)">💰 Collect Fee</button>
+    <button class="btn btn-emerald btn-sm" onclick="navTo('admission',null)">➕ New Student</button>
+  </div>
+  <div class="section-label">Fee Collection (This Month)</div>
+  <div class="card">
+    <div class="card-body" id="dash-fee-bar"></div>
+  </div>
+  <div class="section-label">Class-wise Students</div>
+  <div class="card">
+    <div class="card-body" id="dash-class-chart"></div>
+  </div>
+  <div class="section-label">Recent Activity</div>
+  <div id="dash-activity"></div>
+  <div class="section-label">Fee Defaulters (Top 5)</div>
+  <div id="dash-defaulters"></div>
+</div>
+
+<!-- ═══════════════ STUDENTS ═══════════════ -->
+<div class="page" id="page-students">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="stu-search" placeholder="Search by name, admission no., phone..." oninput="renderStudents()"/>
+  </div>
+  <div class="chip-row" id="stu-class-chips"></div>
+  <div class="btn-group mb-8" style="margin-bottom:10px">
+    <select class="form-select" style="flex:1;padding:7px 12px;font-size:12px" id="stu-status-filter" onchange="renderStudents()">
+      <option value="all">All Status</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive (Left)</option>
+    </select>
+    <select class="form-select" style="flex:1;padding:7px 12px;font-size:12px" id="stu-fee-filter" onchange="renderStudents()">
+      <option value="all">All Fee Status</option>
+      <option value="paid">Fee Paid</option>
+      <option value="pending">Fee Pending</option>
+    </select>
+  </div>
+  <div id="stu-count" class="text-xs mb-8" style="margin-bottom:8px"></div>
+  <div id="students-list"></div>
+</div>
+
+<!-- ═══════════════ ADMISSION ═══════════════ -->
+<div class="page" id="page-admission">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">New Student Admission</div>
+      <span class="badge badge-navy" id="new-adm-no">VID-001</span>
+    </div>
+    <div class="card-body">
+      <div class="tabs">
+        <div class="tab active" onclick="admTab('personal',this)">Personal</div>
+        <div class="tab" onclick="admTab('academic',this)">Academic</div>
+        <div class="tab" onclick="admTab('fees-tab',this)">Fees & Transport</div>
+      </div>
+      <!-- Personal Tab -->
+      <div id="adm-personal">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">First Name *</label><input class="form-input" id="adm-fname" placeholder="First name"/></div>
+          <div class="form-group"><label class="form-label">Last Name *</label><input class="form-input" id="adm-lname" placeholder="Last name"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date" id="adm-dob"/></div>
+          <div class="form-group"><label class="form-label">Gender *</label>
+            <select class="form-select" id="adm-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Blood Group</label>
+            <select class="form-select" id="adm-blood"><option value="">N/A</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Category</label>
+            <select class="form-select" id="adm-cat"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Father's Name *</label><input class="form-input" id="adm-father" placeholder="Father's full name"/></div>
+        <div class="form-group"><label class="form-label">Mother's Name</label><input class="form-input" id="adm-mother" placeholder="Mother's full name"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Phone Number *</label><input class="form-input" type="tel" id="adm-phone" placeholder="Primary contact"/></div>
+          <div class="form-group"><label class="form-label">Alternate Phone</label><input class="form-input" type="tel" id="adm-phone2" placeholder="Alternate"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Address</label><textarea class="form-textarea" id="adm-address" placeholder="Full residential address..."></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Aadhar Number</label><input class="form-input" id="adm-aadhar" placeholder="12-digit Aadhar"/></div>
+          <div class="form-group"><label class="form-label">Previous School</label><input class="form-input" id="adm-prev-school" placeholder="Previous school name"/></div>
+        </div>
+      </div>
+      <!-- Academic Tab -->
+      <div id="adm-academic" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Class *</label>
+            <select class="form-select" id="adm-class" onchange="updateAdmFeePreview()">
+              <option value="">Select Class</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Section</label>
+            <select class="form-select" id="adm-section">
+              <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Admission Date *</label><input class="form-input" type="date" id="adm-date"/></div>
+        <div class="form-group"><label class="form-label">Roll Number</label><input class="form-input" id="adm-roll" placeholder="Optional roll number"/></div>
+        <div id="adm-fee-preview" class="highlight" style="display:none">
+          <div class="fw-700 mb-8" style="margin-bottom:8px">Fee Structure for Selected Class</div>
+          <div id="adm-fee-preview-content"></div>
+        </div>
+      </div>
+      <!-- Fees & Transport Tab -->
+      <div id="adm-fees-tab" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Concession / Scholarship</label>
+          <select class="form-select" id="adm-concession">
+            <option value="0">None (Full Fee)</option>
+            <option value="10">10% Concession</option>
+            <option value="25">25% Concession</option>
+            <option value="50">50% Concession (Half Fee)</option>
+            <option value="100">100% (Full Free — RTE/Scholarship)</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Concession Reason</label>
+          <select class="form-select" id="adm-conc-reason">
+            <option value="">None</option><option>RTE</option><option>Merit Scholarship</option><option>Staff Ward</option><option>Special Case</option>
+          </select>
+        </div>
+        <div class="divider"></div>
+        <label class="form-check" style="margin-bottom:14px">
+          <input type="checkbox" id="adm-transport" onchange="toggleTransportAdm()"/>
+          <span style="font-size:13px;font-weight:600">Avail School Transport</span>
+        </label>
+        <div id="adm-transport-fields" style="display:none">
+          <div class="form-group"><label class="form-label">Bus Route</label>
+            <select class="form-select" id="adm-route"><option value="">Select Route...</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Bus Stop</label><input class="form-input" id="adm-stop" placeholder="Student's boarding stop"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Medical Conditions / Allergies</label><textarea class="form-textarea" id="adm-medical" placeholder="Any medical conditions, allergies..." style="min-height:60px"></textarea></div>
+      </div>
+      <div class="btn-group mt-12" style="margin-top:14px">
+        <button class="btn btn-ghost" style="flex:1" onclick="clearAdmission()">Clear</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveStudent()">Save Admission</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ READMISSION ═══════════════ -->
+<div class="page" id="page-readmission">
+  <div class="alert alert-gold">
+    <span class="alert-icon">🔄</span>
+    <div class="alert-text">
+      <div class="alert-title">April Session Renewal</div>
+      Promote students to next class, mark those leaving, and start new academic session.
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="radTab('promote',this)">Promote</div>
+    <div class="tab" onclick="radTab('holdback',this)">Hold Back</div>
+    <div class="tab" onclick="radTab('left',this)">Left School</div>
+    <div class="tab" onclick="radTab('confirm',this)">Confirm Session</div>
+  </div>
+  <div id="readmission-content"></div>
+</div>
+
+<!-- ═══════════════ ATTENDANCE ═══════════════ -->
+<div class="page" id="page-attendance">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Mark Attendance</div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Class</label>
+          <select class="form-select" id="att-class" onchange="loadAttendanceStudents()">
+            <option value="">Select Class</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Section</label>
+          <select class="form-select" id="att-section" onchange="loadAttendanceStudents()">
+            <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="att-date" onchange="loadAttendanceStudents()"/>
+      </div>
+      <div class="btn-group mb-8" style="margin-bottom:10px">
+        <button class="btn btn-emerald btn-sm" onclick="markAllPresent()">✅ All Present</button>
+        <button class="btn btn-ghost btn-sm" onclick="markAllAbsent()">❌ All Absent</button>
+        <button class="btn btn-gold btn-sm" onclick="markHoliday()">🏖 Holiday</button>
+      </div>
+    </div>
+  </div>
+  <div id="att-student-list"></div>
+  <div id="att-save-btn"></div>
+
+  <div class="divider"></div>
+  <div class="section-label">Attendance Reports</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Class</label>
+          <select class="form-select" id="att-rep-class"><option value="">All</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Month</label>
+          <input class="form-input" type="month" id="att-rep-month"/>
+        </div>
+      </div>
+      <button class="btn btn-navy btn-sm btn-block" onclick="generateAttReport()">View Report</button>
+    </div>
+  </div>
+  <div id="att-report-output"></div>
+</div>
+
+<!-- ═══════════════ EXAMS ═══════════════ -->
+<div class="page" id="page-exams">
+  <div class="tabs">
+    <div class="tab active" onclick="examTab('list',this)">Exams</div>
+    <div class="tab" onclick="examTab('marks',this)">Enter Marks</div>
+    <div class="tab" onclick="examTab('results',this)">Results</div>
+  </div>
+  <div id="exam-list-panel">
+    <button class="btn btn-primary btn-sm" onclick="openExamModal()" style="margin-bottom:10px">+ Create Exam</button>
+    <div id="exams-list"></div>
+  </div>
+  <div id="exam-marks-panel" style="display:none">
+    <div class="card"><div class="card-body">
+      <div class="form-group"><label class="form-label">Select Exam</label>
+        <select class="form-select" id="marks-exam" onchange="loadMarksForm()"><option value="">Choose exam...</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Class</label>
+          <select class="form-select" id="marks-class" onchange="loadMarksForm()"><option value="">Select</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Subject</label>
+          <select class="form-select" id="marks-subject" onchange="loadMarksForm()"><option value="">Select</option></select>
+        </div>
+      </div>
+    </div></div>
+    <div id="marks-form"></div>
+  </div>
+  <div id="exam-results-panel" style="display:none">
+    <div class="card"><div class="card-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Exam</label>
+          <select class="form-select" id="res-exam"><option value="">Select</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Class</label>
+          <select class="form-select" id="res-class"><option value="">Select</option></select>
+        </div>
+      </div>
+      <button class="btn btn-navy btn-sm btn-block" onclick="generateResults()">View Results</button>
+    </div></div>
+    <div id="results-output"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ FEES ═══════════════ -->
+<div class="page" id="page-fees">
+  <div class="tabs">
+    <div class="tab active" onclick="feeTab('collect',this)">Collect Fee</div>
+    <div class="tab" onclick="feeTab('history',this)">History</div>
+    <div class="tab" onclick="feeTab('defaulters',this)">Defaulters</div>
+  </div>
+  <div id="fee-collect-panel">
+    <div class="card"><div class="card-body">
+      <div class="form-group"><label class="form-label">Search Student</label>
+        <input class="form-input" id="fee-stu-search" placeholder="Name or admission number..." oninput="searchFeeStudent()"/>
+      </div>
+      <div id="fee-stu-results"></div>
+    </div></div>
+    <div id="fee-collection-form" style="display:none"></div>
+  </div>
+  <div id="fee-history-panel" style="display:none">
+    <div class="search-wrap"><span class="search-icon">🔍</span>
+      <input class="search-input" type="text" id="fee-hist-search" placeholder="Search receipts..." oninput="renderFeeHistory()"/>
+    </div>
+    <div id="fee-history-list"></div>
+  </div>
+  <div id="fee-defaulters-panel" style="display:none">
+    <div id="fee-defaulters-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ FEE STRUCTURE ═══════════════ -->
+<div class="page" id="page-feestructure">
+  <div class="alert alert-navy">
+    <span class="alert-icon">ℹ️</span>
+    <div class="alert-text">Set fee for each class separately. Transport fees are configured in the Transport module.</div>
+  </div>
+  <div id="fee-structure-list"></div>
+  <button class="btn btn-primary btn-block" onclick="saveFeeStructure()">💾 Save All Fee Structures</button>
+</div>
+
+<!-- ═══════════════ TEACHERS ═══════════════ -->
+<div class="page" id="page-teachers">
+  <div class="search-wrap"><span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="tch-search" placeholder="Search teachers..." oninput="renderTeachers()"/>
+  </div>
+  <div id="teachers-list"></div>
+</div>
+
+<!-- ═══════════════ SALARY ═══════════════ -->
+<div class="page" id="page-salary">
+  <div class="card"><div class="card-body">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Month</label><input class="form-input" type="month" id="sal-month"/></div>
+      <div class="form-group" style="display:flex;align-items:flex-end">
+        <button class="btn btn-navy btn-sm btn-block" onclick="generateSalary()">Generate</button>
+      </div>
+    </div>
+  </div></div>
+  <div id="salary-output"></div>
+</div>
+
+<!-- ═══════════════ TRANSPORT ═══════════════ -->
+<div class="page" id="page-transport">
+  <div class="tabs">
+    <div class="tab active" onclick="transTab('routes',this)">Routes</div>
+    <div class="tab" onclick="transTab('students',this)">Students</div>
+  </div>
+  <div id="trans-routes-panel">
+    <button class="btn btn-primary btn-sm" onclick="openRouteModal()" style="margin-bottom:10px">+ Add Route</button>
+    <div id="routes-list"></div>
+  </div>
+  <div id="trans-students-panel" style="display:none">
+    <div class="form-group"><label class="form-label">Filter by Route</label>
+      <select class="form-select" id="trans-stu-route" onchange="renderTransportStudents()">
+        <option value="all">All Routes</option>
+      </select>
+    </div>
+    <div id="transport-students-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ REPORTS ═══════════════ -->
+<div class="page" id="page-reports">
+  <div class="section-label">Student Reports</div>
+  <div class="card"><div class="card-body">
+    <div class="btn-group">
+      <button class="btn btn-navy btn-sm" onclick="report('students-all')">📋 All Students</button>
+      <button class="btn btn-ghost btn-sm" onclick="report('class-count')">🏫 Class Count</button>
+      <button class="btn btn-ghost btn-sm" onclick="report('category')">👥 Category</button>
+    </div>
+  </div></div>
+  <div class="section-label">Fee Reports</div>
+  <div class="card"><div class="card-body">
+    <div class="form-row mb-8" style="margin-bottom:8px">
+      <div class="form-group"><label class="form-label">From</label><input class="form-input" type="date" id="rep-from"/></div>
+      <div class="form-group"><label class="form-label">To</label><input class="form-input" type="date" id="rep-to"/></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-gold btn-sm" onclick="report('fee-collection')">💰 Collection</button>
+      <button class="btn btn-rose btn-sm" onclick="report('fee-defaulters')">⚠️ Defaulters</button>
+      <button class="btn btn-ghost btn-sm" onclick="report('fee-class')">🏫 Class-wise</button>
+    </div>
+  </div></div>
+  <div class="section-label">Attendance Reports</div>
+  <div class="card"><div class="card-body">
+    <div class="form-group"><label class="form-label">Month</label><input class="form-input" type="month" id="rep-att-month"/></div>
+    <button class="btn btn-emerald btn-sm" onclick="report('attendance')">✅ Attendance Report</button>
+  </div></div>
+  <div id="report-output" style="margin-top:12px"></div>
+</div>
+
+<!-- ═══════════════ STUDENT PORTAL ═══════════════ -->
+<div class="page" id="page-student-portal">
+  <div id="portal-login" class="card">
+    <div class="card-body" style="text-align:center;padding:30px 20px">
+      <div style="font-size:48px;margin-bottom:12px">🎓</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px">Student Portal</div>
+      <div class="text-sm" style="margin-bottom:20px">Enter your Admission Number to view your details</div>
+      <div class="form-group" style="text-align:left">
+        <label class="form-label">Admission Number</label>
+        <input class="form-input" id="portal-adm-no" placeholder="e.g. VID-2024-001" style="text-align:center;font-size:16px;font-weight:700"/>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="portalLogin()">View My Details →</button>
+    </div>
+  </div>
+  <div id="portal-dashboard" style="display:none"></div>
+</div>
+
+<!-- ═══════════════ SETTINGS ═══════════════ -->
+<div class="page" id="page-settings">
+  <div class="card">
+    <div class="card-header"><div class="card-title">School Information</div></div>
+    <div class="card-body">
+      <div class="form-group"><label class="form-label">School Name *</label><input class="form-input" id="set-school-name" placeholder="Your School Name"/></div>
+      <div class="form-group"><label class="form-label">Principal Name</label><input class="form-input" id="set-principal" placeholder="Principal's name"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" type="tel" id="set-phone" placeholder="School phone"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="set-email" placeholder="School email"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Address</label><textarea class="form-textarea" id="set-address" style="min-height:60px"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Board</label>
+          <select class="form-select" id="set-board"><option>CBSE</option><option>ICSE</option><option>State Board</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Affiliation No.</label><input class="form-input" id="set-affiliation" placeholder="Affiliation number"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Current Session</label><input class="form-input" id="set-session" placeholder="2024-25"/></div>
+        <div class="form-group"><label class="form-label">Admin Name</label><input class="form-input" id="set-admin" placeholder="Admin name"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Classes Offered (comma separated)</label><input class="form-input" id="set-classes" placeholder="1,2,3,4,5,6,7,8,9,10"/></div>
+      <button class="btn btn-primary btn-block" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">Data Management</div></div>
+    <div class="card-body">
+      <div class="btn-group">
+        <button class="btn btn-navy btn-sm" onclick="exportData()">📤 Export Backup</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">📥 Import</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
+      <div class="divider"></div>
+      <div class="text-xs">⚠️ All data stored locally on this device. Export regularly!</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav no-print">
+  <button class="bnav-item active" id="bnav-dashboard" onclick="navTo('dashboard',null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Home
+  </button>
+  <button class="bnav-item" id="bnav-students" onclick="navTo('students',null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Students
+  </button>
+  <button class="bnav-item" id="bnav-fees" onclick="navTo('fees',null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Fees
+  </button>
+  <button class="bnav-item" id="bnav-attendance" onclick="navTo('attendance',null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    Attend.
+  </button>
+  <button class="bnav-item" id="bnav-reports" onclick="navTo('reports',null)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Reports
+  </button>
+</nav>
+
+<button class="fab no-print" id="main-fab" onclick="fabAction()" title="Add">+</button>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-student" onclick="closeModalOutside(event,'modal-student')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-stu-title">Student Details</div>
+      <button class="modal-close" onclick="closeModal('modal-student')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-stu-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-teacher" onclick="closeModalOutside(event,'modal-teacher')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-tch-title">Add Teacher</div>
+      <button class="modal-close" onclick="closeModal('modal-teacher')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name *</label><input class="form-input" id="tch-fname" placeholder="First name"/></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input class="form-input" id="tch-lname" placeholder="Last name"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phone *</label><input class="form-input" type="tel" id="tch-phone" placeholder="Phone number"/></div>
+        <div class="form-group"><label class="form-label">Gender</label>
+          <select class="form-select" id="tch-gender"><option>Male</option><option>Female</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Qualification</label><input class="form-input" id="tch-qual" placeholder="B.Ed, M.Ed, M.A., etc."/></div>
+      <div class="form-group"><label class="form-label">Subjects (comma separated)</label><input class="form-input" id="tch-subjects" placeholder="Math, Science, English"/></div>
+      <div class="form-group"><label class="form-label">Class Teacher of</label>
+        <select class="form-select" id="tch-class-teacher"><option value="">Not a class teacher</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Join Date</label><input class="form-input" type="date" id="tch-join"/></div>
+        <div class="form-group"><label class="form-label">Monthly Salary (₹)</label><input class="form-input" type="number" id="tch-salary" placeholder="25000"/></div>
+      </div>
+      <input type="hidden" id="tch-id"/>
+      <div class="btn-group mt-12">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-teacher')">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveTeacher()">Save Teacher</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-exam" onclick="closeModalOutside(event,'modal-exam')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Create Exam</div>
+      <button class="modal-close" onclick="closeModal('modal-exam')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Exam Name *</label>
+        <select class="form-select" id="exam-name">
+          <option>Unit Test 1</option><option>Unit Test 2</option><option>Half Yearly</option>
+          <option>Pre-Board</option><option>Annual / Final</option><option>Custom</option>
+        </select>
+      </div>
+      <div class="form-group" id="exam-custom-name-grp" style="display:none">
+        <label class="form-label">Custom Name</label><input class="form-input" id="exam-custom-name" placeholder="Enter exam name"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" id="exam-start"/></div>
+        <div class="form-group"><label class="form-label">End Date</label><input class="form-input" type="date" id="exam-end"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Applicable Classes</label>
+        <input class="form-input" id="exam-classes" placeholder="e.g. 1,2,3,4,5 or leave blank for all"/>
+      </div>
+      <div class="form-group"><label class="form-label">Max Marks (default per subject)</label>
+        <input class="form-input" type="number" id="exam-max" value="100"/>
+      </div>
+      <div class="form-group"><label class="form-label">Pass Marks (default)</label>
+        <input class="form-input" type="number" id="exam-pass" value="33"/>
+      </div>
+      <div class="btn-group mt-12">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-exam')">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveExam()">Create Exam</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-route" onclick="closeModalOutside(event,'modal-route')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-route-title">Add Route</div>
+      <button class="modal-close" onclick="closeModal('modal-route')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Route Name *</label><input class="form-input" id="route-name" placeholder="e.g. Route A - City Center"/></div>
+      <div class="form-group"><label class="form-label">Bus Number</label><input class="form-input" id="route-bus" placeholder="e.g. MP04-1234"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Driver Name</label><input class="form-input" id="route-driver" placeholder="Driver name"/></div>
+        <div class="form-group"><label class="form-label">Driver Phone</label><input class="form-input" type="tel" id="route-driver-phone" placeholder="Phone"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Stops (comma separated)</label><input class="form-input" id="route-stops" placeholder="Stop 1, Stop 2, Stop 3..."/></div>
+      <div class="form-group"><label class="form-label">Monthly Fee (₹)</label><input class="form-input" type="number" id="route-fee" placeholder="500"/></div>
+      <div class="form-group"><label class="form-label">Bus Capacity</label><input class="form-input" type="number" id="route-capacity" placeholder="40"/></div>
+      <input type="hidden" id="route-id"/>
+      <div class="btn-group mt-12">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-route')">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" onclick="saveRoute()">Save Route</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-receipt">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Fee Receipt</div>
+      <button class="modal-close" onclick="closeModal('modal-receipt')">✕</button>
+    </div>
+    <div class="modal-body" id="receipt-content"></div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-body" id="confirm-body"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-rose" style="flex:1" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="print-only" id="print-area"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATABASE
+// ═══════════════════════════════════════════════════════════════
+const DB_KEY = 'vidyalaya_crm_v1';
+
+function loadDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || freshDB(); }
+  catch(e) { return freshDB(); }
+}
+
+function freshDB() {
+  return {
+    settings: {
+      schoolName:'Vidyalaya School', principal:'', phone:'', email:'',
+      address:'', board:'CBSE', affiliation:'', session:'2024-25',
+      admin:'Administrator', classes:'1,2,3,4,5,6,7,8,9,10',
+    },
+    students: [], teachers: [], feeRecords: [], attendance: {},
+    exams: [], marks: {}, routes: [],
+    feeStructure: {},
+    activity: [],
+    nextStuNum: 1, nextTchNum: 1, nextReceiptNum: 1,
+  };
+}
+
+function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+let db = loadDB();
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+const fmt = n => '₹' + parseFloat(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtDate = d => { if(!d)return '-'; const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); };
+const today = () => new Date().toISOString().slice(0,10);
+const thisMonth = () => new Date().toISOString().slice(0,7);
+const initials = n => (n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const getClasses = () => (db.settings.classes||'1,2,3,4,5,6,7,8,9,10').split(',').map(c=>c.trim()).filter(Boolean);
+const activeStudents = () => db.students.filter(s=>s.status==='active');
+
+function logActivity(msg) {
+  db.activity.unshift({msg, time: Date.now()});
+  if(db.activity.length > 50) db.activity = db.activity.slice(0,50);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+let currentPage = 'dashboard';
+
+const pageNames = {
+  dashboard:'Dashboard', students:'Students', admission:'New Admission',
+  readmission:'Readmission', attendance:'Attendance', exams:'Exams & Results',
+  fees:'Fee Management', feestructure:'Fee Structure', teachers:'Teachers',
+  salary:'Salary', transport:'Transport', reports:'Reports',
+  'student-portal':'Student Portal', settings:'Settings'
+};
+
+function navTo(page, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(n=>n.classList.remove('active'));
+
+  document.getElementById('page-'+page).classList.add('active');
+  if(el) el.classList.add('active');
+  const bnav = document.getElementById('bnav-'+page);
+  if(bnav) bnav.classList.add('active');
+
+  document.getElementById('topbar-page').textContent = pageNames[page]||page;
+  document.getElementById('topbar-bc').textContent = db.settings.schoolName;
+  currentPage = page;
+  closeSidebar();
+
+  const renders = {
+    dashboard: renderDashboard, students: renderStudents,
+    admission: initAdmission, fees: ()=>{ feeTab('collect'); renderFeeHistory(); renderFeeDefaulters(); },
+    feestructure: renderFeeStructure, teachers: renderTeachers,
+    transport: ()=>{ renderRoutes(); populateRouteFilter(); renderTransportStudents(); },
+    attendance: initAttendance, exams: ()=>{ renderExams(); populateExamDropdowns(); },
+    reports: initReports, readmission: renderReadmission,
+    'student-portal': ()=>{ document.getElementById('portal-login').style.display='block'; document.getElementById('portal-dashboard').style.display='none'; },
+    settings: loadSettings, salary: ()=>{ document.getElementById('sal-month').value=thisMonth(); }
+  };
+  if(renders[page]) renders[page]();
+
+  // Update fab
+  const fabMap = { students:'+ Student', admission:'Clear', fees:'+ Collect', teachers:'+ Teacher', transport:'+ Route', exams:'+ Exam' };
+  const fab = document.getElementById('main-fab');
+  fab.textContent = fabMap[page] ? fabMap[page].split(' ')[0] : '+';
+  fab.style.display = ['dashboard','readmission','reports','settings','salary','feestructure','attendance','student-portal'].includes(page) ? 'none' : 'flex';
+}
+
+function fabAction() {
+  const actions = { students: ()=>navTo('admission',null), admission: clearAdmission, fees: ()=>feeTab('collect'), teachers: openTeacherModal, transport: openRouteModal, exams: openExamModal };
+  if(actions[currentPage]) actions[currentPage]();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  const isOpen = sb.classList.contains('open');
+  sb.classList.toggle('open', !isOpen);
+  ov.classList.toggle('show', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeModalOutside(e,id) { if(e.target===e.currentTarget) closeModal(id); }
+
+// TOAST
+let toastT;
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+// CONFIRM
+let confirmCb;
+function confirm(title, body, cb, okLabel='Delete', okClass='btn-rose') {
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-body').textContent=body;
+  const ok=document.getElementById('confirm-ok');
+  ok.textContent=okLabel; ok.className='btn '+okClass;
+  confirmCb=cb;
+  document.getElementById('confirm-dialog').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirm-dialog').classList.remove('open'); confirmCb=null; }
+document.getElementById('confirm-ok').onclick=()=>{ if(confirmCb) confirmCb(); closeConfirm(); };
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDashboard() {
+  const students = activeStudents();
+  const teachers = db.teachers.filter(t=>t.status!=='inactive');
+  const thisM = thisMonth();
+  const feeThisMonth = db.feeRecords.filter(r=>r.date.startsWith(thisM));
+  const feeCollected = feeThisMonth.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+
+  // Defaulters
+  const defaulters = getDefaulters();
+  document.getElementById('defaulter-badge').textContent = defaulters.length;
+  document.getElementById('fee-notif').style.display = defaulters.length ? 'block' : 'none';
+
+  // Today attendance
+  const todayAtt = db.attendance[today()] || {};
+  let presentToday = 0, totalToday = 0;
+  Object.values(todayAtt).forEach(c => { Object.values(c).forEach(s => { totalToday++; if(s==='P') presentToday++; }); });
+  const attPct = totalToday ? Math.round(presentToday/totalToday*100) : 0;
+
+  // Upcoming exams
+  const upcomingExams = db.exams.filter(e=>e.startDate>=today()).length;
+
+  // Stats
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card navy"><div class="stat-icon">👨‍🎓</div><div class="stat-val">${students.length}</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card gold"><div class="stat-icon">💰</div><div class="stat-val">${fmt(feeCollected)}</div><div class="stat-label">Fee This Month</div></div>
+    <div class="stat-card emerald"><div class="stat-icon">✅</div><div class="stat-val">${attPct}%</div><div class="stat-label">Today's Attendance</div></div>
+    <div class="stat-card rose"><div class="stat-icon">⚠️</div><div class="stat-val">${defaulters.length}</div><div class="stat-label">Fee Defaulters</div></div>
+    <div class="stat-card sky"><div class="stat-icon">👩‍🏫</div><div class="stat-val">${teachers.length}</div><div class="stat-label">Teachers</div></div>
+    <div class="stat-card violet"><div class="stat-icon">📋</div><div class="stat-val">${upcomingExams}</div><div class="stat-label">Upcoming Exams</div></div>
+  `;
+
+  // Alerts
+  const alerts = [];
+  const now = new Date();
+  if(now.getMonth()>=2 && now.getMonth()<=3) {
+    alerts.push(`<div class="alert alert-gold"><span class="alert-icon">🔄</span><div class="alert-text"><div class="alert-title">April Readmission Time!</div>New session starting soon. <span style="cursor:pointer;text-decoration:underline;font-weight:700" onclick="navTo('readmission',null)">Start readmission process →</span></div></div>`);
+  }
+  if(defaulters.length) {
+    alerts.push(`<div class="alert alert-rose"><span class="alert-icon">💰</span><div class="alert-text"><div class="alert-title">${defaulters.length} students have pending fees</div><span style="cursor:pointer;text-decoration:underline;font-weight:700" onclick="navTo('fees',null)">View defaulters →</span></div></div>`);
+  }
+  document.getElementById('dash-alerts').innerHTML = alerts.join('');
+
+  // Fee bar
+  const months = getLast6Months();
+  const maxFee = Math.max(...months.map(m=>db.feeRecords.filter(r=>r.date.startsWith(m.key)).reduce((s,r)=>s+parseFloat(r.amount||0),0)),1);
+  document.getElementById('dash-fee-bar').innerHTML = '<div style="display:flex;gap:6px;align-items:flex-end;height:80px">' +
+    months.map(m => {
+      const amt = db.feeRecords.filter(r=>r.date.startsWith(m.key)).reduce((s,r)=>s+parseFloat(r.amount||0),0);
+      const h = Math.max(Math.round(amt/maxFee*70),4);
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <div style="font-size:9px;color:var(--text3)">${fmt(amt).replace('₹','₹').split('.')[0]}</div>
+        <div style="width:100%;height:${h}px;background:${m.key===thisM?'var(--indigo)':'var(--navy3)'};border-radius:4px 4px 0 0"></div>
+        <div style="font-size:9px;color:var(--text3)">${m.label}</div>
+      </div>`;
+    }).join('') + '</div>';
+
+  // Class chart
+  const classes = getClasses();
+  document.getElementById('dash-class-chart').innerHTML = classes.length ?
+    '<div style="display:flex;flex-direction:column;gap:6px">' + classes.map(c=>{
+      const cnt = students.filter(s=>s.class===c).length;
+      const pct = students.length ? Math.round(cnt/students.length*100) : 0;
+      return `<div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;font-weight:600;color:var(--text2);width:50px;text-align:right">Class ${c}</span>
+        <div style="flex:1;height:18px;background:var(--border);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:var(--navy);border-radius:4px;transition:width .5s"></div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--text);width:28px">${cnt}</span>
+      </div>`;
+    }).join('') + '</div>' : '<div class="text-xs">No students enrolled yet</div>';
+
+  // Activity
+  const actEl = document.getElementById('dash-activity');
+  if(!db.activity.length) { actEl.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No activity yet</div></div>'; }
+  else { actEl.innerHTML = db.activity.slice(0,8).map(a=>`<div class="list-item" style="padding:10px 12px"><div style="font-size:13px;color:var(--text)">${a.msg}</div><div class="text-xs" style="flex-shrink:0;margin-left:8px">${timeAgo(a.time)}</div></div>`).join(''); }
+
+  // Defaulters
+  const defEl = document.getElementById('dash-defaulters');
+  if(!defaulters.length) { defEl.innerHTML='<div class="text-xs" style="padding:10px;color:var(--emerald)">✅ No defaulters — all fees clear!</div>'; }
+  else { defEl.innerHTML = defaulters.slice(0,5).map(d=>`
+    <div class="list-item" onclick="openStudentModal('${d.id}')">
+      <div class="list-avatar" style="background:var(--rose2);color:var(--rose)">${initials(d.name)}</div>
+      <div class="list-info">
+        <div class="list-name">${d.name}</div>
+        <div class="list-sub">Class ${d.class} | ${d.admNo}</div>
+      </div>
+      <div class="list-right">
+        <div style="font-size:14px;font-weight:800;color:var(--rose)">${fmt(d.pending)}</div>
+        <div class="text-xs">pending</div>
+      </div>
+    </div>`).join(''); }
+}
+
+function getLast6Months() {
+  const res = [];
+  for(let i=5;i>=0;i--) {
+    const d = new Date(); d.setMonth(d.getMonth()-i);
+    res.push({ key:d.toISOString().slice(0,7), label:d.toLocaleDateString('en-IN',{month:'short'}) });
+  }
+  return res;
+}
+
+function timeAgo(ts) {
+  const diff = Date.now()-ts;
+  if(diff<60000) return 'just now';
+  if(diff<3600000) return Math.floor(diff/60000)+'m ago';
+  if(diff<86400000) return Math.floor(diff/3600000)+'h ago';
+  return Math.floor(diff/86400000)+'d ago';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STUDENTS
+// ═══════════════════════════════════════════════════════════════
+let currentClassFilter = 'all';
+
+function renderStudents() {
+  const search = (document.getElementById('stu-search').value||'').toLowerCase();
+  const statusF = document.getElementById('stu-status-filter').value;
+  const feeF = document.getElementById('stu-fee-filter').value;
+  const balances = computeStudentBalances();
+
+  let students = db.students.filter(s => {
+    if(currentClassFilter!=='all' && s.class!==currentClassFilter) return false;
+    if(statusF!=='all' && s.status!==statusF) return false;
+    if(search && !`${s.firstName} ${s.lastName} ${s.admNo} ${s.phone}`.toLowerCase().includes(search)) return false;
+    if(feeF==='paid' && (balances[s.id]||0)>0) return false;
+    if(feeF==='pending' && (balances[s.id]||0)<=0) return false;
+    return true;
+  });
+
+  // Chips
+  const classes = getClasses();
+  document.getElementById('stu-class-chips').innerHTML =
+    `<div class="chip ${currentClassFilter==='all'?'active':''}" onclick="setClassFilter('all',this)">All</div>` +
+    classes.map(c=>`<div class="chip ${currentClassFilter===c?'active':''}" onclick="setClassFilter('${c}',this)">Class ${c}</div>`).join('');
+
+  document.getElementById('stu-count').textContent = `${students.length} students found`;
+
+  const sl = document.getElementById('students-list');
+  if(!students.length) {
+    sl.innerHTML = `<div class="empty"><div class="empty-icon">👨‍🎓</div><div class="empty-title">No students found</div><div class="empty-desc">Add students via New Admission</div></div><button class="btn btn-primary btn-block" onclick="navTo('admission',null)">+ New Admission</button>`;
+    return;
+  }
+
+  sl.innerHTML = students.map(s => {
+    const bal = balances[s.id]||0;
+    const fullName = `${s.firstName} ${s.lastName}`;
+    return `<div class="list-item" onclick="openStudentModal('${s.id}')">
+      <div class="list-avatar" style="background:${getAvatarColor(s.class)};color:#fff">${initials(fullName)}</div>
+      <div class="list-info">
+        <div class="list-name">${fullName}</div>
+        <div class="list-sub">Class ${s.class}-${s.section||'A'} | ${s.admNo}</div>
+      </div>
+      <div class="list-right">
+        <div class="fee-status ${bal>0?'fee-pending':bal<0?'fee-partial':'fee-paid'}">
+          <span class="fee-dot"></span>
+          <span>${bal>0?fmt(bal)+' due':bal<0?'Advance':'Paid'}</span>
+        </div>
+        <div class="text-xs mt-4" style="margin-top:4px">${s.transport?'🚌':''} ${s.status!=='active'?'<span style="color:var(--rose)">Inactive</span>':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setClassFilter(cls, el) {
+  currentClassFilter = cls;
+  document.querySelectorAll('#stu-class-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderStudents();
+}
+
+function getAvatarColor(cls) {
+  const colors = ['#1e3a5f','#4f46e5','#059669','#dc2626','#f59e0b','#7c3aed','#0284c7','#e11d48','#065f46','#1d4ed8'];
+  return colors[(parseInt(cls)||1)%colors.length];
+}
+
+function openStudentModal(id) {
+  const s = db.students.find(s=>s.id===id);
+  if(!s) return;
+  const balances = computeStudentBalances();
+  const bal = balances[id]||0;
+  const fullName = `${s.firstName} ${s.lastName}`;
+  const recentFees = db.feeRecords.filter(r=>r.studentId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+
+  document.getElementById('modal-stu-title').textContent = fullName;
+  document.getElementById('modal-stu-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:56px;height:56px;border-radius:14px;background:${getAvatarColor(s.class)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;font-family:var(--font-display)">${initials(fullName)}</div>
+      <div>
+        <div style="font-size:17px;font-weight:800;color:var(--text)">${fullName}</div>
+        <div class="text-sm">Class ${s.class}-${s.section||'A'}</div>
+        <span class="badge ${s.status==='active'?'badge-emerald':'badge-slate'}">${s.status==='active'?'Active':'Inactive'}</span>
+      </div>
+    </div>
+    <div class="highlight ${bal>0?'rose':bal<0?'gold':'emerald'}" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="text-xs">${bal>0?'Fee Pending':bal<0?'Advance Paid':'All Clear'}</div>
+          <div style="font-size:20px;font-weight:800;color:${bal>0?'var(--rose)':bal<0?'var(--gold)':'var(--emerald)'}">${fmt(Math.abs(bal))}</div>
+        </div>
+        ${bal>0?`<button class="btn btn-primary btn-sm" onclick="quickCollectFee('${id}');closeModal('modal-student')">Collect Now</button>`:'<span style="font-size:20px">✅</span>'}
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:12px">
+      <div><div class="text-xs">Admission No.</div><div class="fw-700">${s.admNo}</div></div>
+      <div><div class="text-xs">Father's Name</div><div class="fw-700">${s.fatherName||'-'}</div></div>
+      <div><div class="text-xs">Phone</div><div class="fw-700">${s.phone||'-'}</div></div>
+      <div><div class="text-xs">Date of Birth</div><div class="fw-700">${fmtDate(s.dob)}</div></div>
+      <div><div class="text-xs">Category</div><div class="fw-700">${s.category||'-'}</div></div>
+      <div><div class="text-xs">Blood Group</div><div class="fw-700">${s.blood||'-'}</div></div>
+      <div><div class="text-xs">Transport</div><div class="fw-700">${s.transport?'Yes ('+s.routeName+')':'No'}</div></div>
+      <div><div class="text-xs">Concession</div><div class="fw-700">${s.concession||0}%</div></div>
+    </div>
+    <div class="btn-group" style="margin-bottom:12px">
+      <button class="btn btn-ghost btn-sm" onclick="editStudent('${id}')">✏️ Edit</button>
+      <button class="btn btn-ghost btn-sm" onclick="printTC('${id}')">📄 TC</button>
+      <button class="btn btn-rose btn-sm" onclick="confirmDeleteStudent('${id}')">🗑 Delete</button>
+    </div>
+    ${recentFees.length?`<div class="section-label" style="margin-top:0">Recent Fee Payments</div>` +
+      recentFees.map(r=>`<div class="list-item" style="margin-bottom:6px">
+        <div style="flex:1"><div class="fw-700" style="font-size:13px">${fmtDate(r.date)}</div><div class="text-xs">${r.receiptNo} | ${r.payMode||'Cash'}</div></div>
+        <div style="font-size:14px;font-weight:800;color:var(--emerald)">${fmt(r.amount)}</div>
+      </div>`).join(''):''}
+  `;
+  openModal('modal-student');
+}
+
+function confirmDeleteStudent(id) {
+  const s = db.students.find(s=>s.id===id);
+  confirm('Delete Student?', `This will permanently delete ${s?.firstName} ${s?.lastName} and all their records.`, ()=>{
+    db.students = db.students.filter(s=>s.id!==id);
+    db.feeRecords = db.feeRecords.filter(r=>r.studentId!==id);
+    saveDB(); closeModal('modal-student'); renderStudents(); toast('Student deleted');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMISSION
+// ═══════════════════════════════════════════════════════════════
+function initAdmission() {
+  const classes = getClasses();
+  const classEl = document.getElementById('adm-class');
+  classEl.innerHTML = '<option value="">Select Class</option>' + classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+  document.getElementById('adm-date').value = today();
+
+  // Auto admission number
+  const num = 'VID-'+new Date().getFullYear()+'-'+String(db.nextStuNum).padStart(3,'0');
+  document.getElementById('new-adm-no').textContent = num;
+
+  // Routes
+  const routeEl = document.getElementById('adm-route');
+  routeEl.innerHTML = '<option value="">Select Route...</option>' + db.routes.map(r=>`<option value="${r.id}">${r.name} — ₹${r.fee}/mo</option>`).join('');
+}
+
+function admTab(tab, el) {
+  document.getElementById('adm-personal').style.display = tab==='personal'?'':'none';
+  document.getElementById('adm-academic').style.display = tab==='academic'?'':'none';
+  document.getElementById('adm-fees-tab').style.display = tab==='fees-tab'?'':'none';
+  document.querySelectorAll('#page-admission .tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+function toggleTransportAdm() {
+  const checked = document.getElementById('adm-transport').checked;
+  document.getElementById('adm-transport-fields').style.display = checked?'':'none';
+}
+
+function updateAdmFeePreview() {
+  const cls = document.getElementById('adm-class').value;
+  if(!cls) { document.getElementById('adm-fee-preview').style.display='none'; return; }
+  const fs = db.feeStructure[cls];
+  if(!fs) { document.getElementById('adm-fee-preview').style.display='none'; return; }
+  document.getElementById('adm-fee-preview').style.display='';
+  document.getElementById('adm-fee-preview-content').innerHTML = `
+    <div class="two-col">
+      ${fs.tuition?`<div><div class="text-xs">Monthly Tuition</div><div class="fw-700">${fmt(fs.tuition)}</div></div>`:''}
+      ${fs.admission?`<div><div class="text-xs">Admission Fee</div><div class="fw-700">${fmt(fs.admission)}</div></div>`:''}
+      ${fs.annual?`<div><div class="text-xs">Annual Charges</div><div class="fw-700">${fmt(fs.annual)}</div></div>`:''}
+      ${fs.exam?`<div><div class="text-xs">Exam Fee</div><div class="fw-700">${fmt(fs.exam)}</div></div>`:''}
+    </div>
+  `;
+}
+
+function saveStudent(isEdit=false, editId=null) {
+  const fname = document.getElementById('adm-fname').value.trim();
+  const lname = document.getElementById('adm-lname').value.trim();
+  const cls   = document.getElementById('adm-class').value;
+  const phone = document.getElementById('adm-phone').value.trim();
+  const father= document.getElementById('adm-father').value.trim();
+
+  if(!fname||!lname) { toast('First and last name required'); return; }
+  if(!cls) { toast('Please select a class'); return; }
+  if(!phone) { toast('Phone number required'); return; }
+  if(!father) { toast("Father's name required"); return; }
+
+  const transportOn = document.getElementById('adm-transport').checked;
+  const routeId = document.getElementById('adm-route').value;
+  const route = transportOn && routeId ? db.routes.find(r=>r.id===routeId) : null;
+
+  const admNo = isEdit ? editId : 'VID-'+new Date().getFullYear()+'-'+String(db.nextStuNum).padStart(3,'0');
+
+  const student = {
+    id: isEdit ? editId : uid(),
+    admNo, firstName:fname, lastName:lname,
+    dob: document.getElementById('adm-dob').value,
+    gender: document.getElementById('adm-gender').value,
+    blood: document.getElementById('adm-blood').value,
+    category: document.getElementById('adm-cat').value,
+    fatherName: father,
+    motherName: document.getElementById('adm-mother').value.trim(),
+    phone, phone2: document.getElementById('adm-phone2').value.trim(),
+    address: document.getElementById('adm-address').value.trim(),
+    aadhar: document.getElementById('adm-aadhar').value.trim(),
+    prevSchool: document.getElementById('adm-prev-school').value.trim(),
+    class: cls, section: document.getElementById('adm-section').value,
+    admDate: document.getElementById('adm-date').value,
+    roll: document.getElementById('adm-roll').value.trim(),
+    concession: parseInt(document.getElementById('adm-concession').value)||0,
+    concessionReason: document.getElementById('adm-conc-reason').value,
+    transport: transportOn,
+    routeId: route?.id||'', routeName: route?.name||'',
+    routeFee: route ? parseFloat(route.fee)||0 : 0,
+    busStop: document.getElementById('adm-stop').value.trim(),
+    medical: document.getElementById('adm-medical').value.trim(),
+    status:'active', createdAt: isEdit ? undefined : Date.now(),
+  };
+
+  if(isEdit) {
+    const idx = db.students.findIndex(s=>s.id===editId);
+    if(idx>=0) { student.createdAt=db.students[idx].createdAt; db.students[idx]=student; }
+  } else {
+    db.nextStuNum++;
+    db.students.push(student);
+    // Create admission fee record if structure exists
+    const fs = db.feeStructure[cls];
+    if(fs && fs.admission) {
+      db.feeRecords.push({ id:uid(), studentId:student.id, amount:0, feeHeads:{ admission: fs.admission }, date:today(), receiptNo:'PENDING', payMode:'', isPaid:false, note:'Admission fee due' });
+    }
+  }
+  logActivity(`${isEdit?'Updated':'Admitted'} student: ${fname} ${lname} in Class ${cls}`);
+  saveDB();
+  toast(isEdit?'Student updated!':'Student admitted successfully!');
+  clearAdmission();
+  navTo('students',null);
+}
+
+function clearAdmission() {
+  ['adm-fname','adm-lname','adm-father','adm-mother','adm-phone','adm-phone2','adm-address','adm-aadhar','adm-prev-school','adm-roll','adm-stop','adm-medical'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('adm-date').value = today();
+  document.getElementById('adm-transport').checked = false;
+  document.getElementById('adm-transport-fields').style.display='none';
+  document.getElementById('adm-fee-preview').style.display='none';
+  initAdmission();
+}
+
+function editStudent(id) {
+  const s = db.students.find(s=>s.id===id);
+  if(!s) return;
+  closeModal('modal-student');
+  navTo('admission',null);
+  setTimeout(()=>{
+    document.getElementById('adm-fname').value=s.firstName;
+    document.getElementById('adm-lname').value=s.lastName;
+    document.getElementById('adm-dob').value=s.dob||'';
+    document.getElementById('adm-gender').value=s.gender||'Male';
+    document.getElementById('adm-blood').value=s.blood||'';
+    document.getElementById('adm-cat').value=s.category||'General';
+    document.getElementById('adm-father').value=s.fatherName||'';
+    document.getElementById('adm-mother').value=s.motherName||'';
+    document.getElementById('adm-phone').value=s.phone||'';
+    document.getElementById('adm-phone2').value=s.phone2||'';
+    document.getElementById('adm-address').value=s.address||'';
+    document.getElementById('adm-aadhar').value=s.aadhar||'';
+    document.getElementById('adm-prev-school').value=s.prevSchool||'';
+    document.getElementById('adm-class').value=s.class;
+    document.getElementById('adm-section').value=s.section||'A';
+    document.getElementById('adm-date').value=s.admDate||today();
+    document.getElementById('adm-roll').value=s.roll||'';
+    document.getElementById('adm-concession').value=s.concession||0;
+    document.getElementById('adm-conc-reason').value=s.concessionReason||'';
+    document.getElementById('adm-transport').checked=s.transport||false;
+    if(s.transport) {
+      document.getElementById('adm-transport-fields').style.display='';
+      document.getElementById('adm-route').value=s.routeId||'';
+      document.getElementById('adm-stop').value=s.busStop||'';
+    }
+    document.getElementById('adm-medical').value=s.medical||'';
+    document.getElementById('new-adm-no').textContent=s.admNo;
+
+    // Override save button
+    const btn = document.querySelector('#page-admission .btn-primary');
+    if(btn) { btn.textContent='Update Student'; btn.onclick=()=>saveStudent(true,s.id); }
+  },100);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEE MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+let currentFeeTab = 'collect';
+
+function feeTab(tab, el) {
+  currentFeeTab = tab;
+  ['collect','history','defaulters'].forEach(t=>{
+    document.getElementById('fee-'+t+'-panel').style.display = t===tab?'':'none';
+  });
+  document.querySelectorAll('#page-fees .tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(tab==='history') renderFeeHistory();
+  if(tab==='defaulters') renderFeeDefaulters();
+}
+
+function searchFeeStudent() {
+  const q = (document.getElementById('fee-stu-search').value||'').toLowerCase();
+  const res = document.getElementById('fee-stu-results');
+  if(!q) { res.innerHTML=''; document.getElementById('fee-collection-form').style.display='none'; return; }
+  const matches = db.students.filter(s=>s.status==='active' && `${s.firstName} ${s.lastName} ${s.admNo}`.toLowerCase().includes(q)).slice(0,6);
+  if(!matches.length) { res.innerHTML='<div class="text-xs" style="padding:6px">No student found</div>'; return; }
+  res.innerHTML = matches.map(s=>`<div class="list-item" style="margin-bottom:6px;cursor:pointer" onclick="selectFeeStudent('${s.id}')">
+    <div class="list-avatar" style="background:${getAvatarColor(s.class)};color:#fff;width:36px;height:36px;font-size:13px">${initials(s.firstName+' '+s.lastName)}</div>
+    <div class="list-info"><div class="list-name">${s.firstName} ${s.lastName}</div><div class="list-sub">${s.admNo} | Class ${s.class}</div></div>
+  </div>`).join('');
+}
+
+function selectFeeStudent(id) {
+  const s = db.students.find(s=>s.id===id);
+  if(!s) return;
+  document.getElementById('fee-stu-results').innerHTML='';
+  document.getElementById('fee-stu-search').value=`${s.firstName} ${s.lastName}`;
+  showFeeForm(s);
+}
+
+function quickCollectFee(id) {
+  navTo('fees',null);
+  setTimeout(()=>{
+    document.getElementById('fee-stu-search').value = '';
+    selectFeeStudent(id);
+  },200);
+}
+
+function showFeeForm(s) {
+  const fs = db.feeStructure[s.class]||{};
+  const conc = (s.concession||0)/100;
+  const balances = computeStudentBalances();
+  const currentBal = balances[s.id]||0;
+
+  const heads = [
+    {key:'tuition', label:'Monthly Tuition', base:fs.tuition||0},
+    {key:'admission', label:'Admission Fee', base:fs.admission||0},
+    {key:'annual', label:'Annual Charges', base:fs.annual||0},
+    {key:'exam', label:'Exam Fee', base:fs.exam||0},
+    {key:'library', label:'Library Fee', base:fs.library||0},
+    {key:'sports', label:'Sports Fee', base:fs.sports||0},
+    {key:'computer', label:'Computer Lab Fee', base:fs.computer||0},
+  ].filter(h=>h.base>0);
+
+  if(s.transport && s.routeFee) heads.push({key:'transport', label:'Transport Fee', base:s.routeFee});
+
+  const formHtml = `
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">${s.firstName} ${s.lastName}</div><div class="text-xs">Class ${s.class}-${s.section||'A'} | ${s.admNo}</div></div>
+        <div class="text-right"><div class="text-xs">Current Balance</div><div style="font-size:15px;font-weight:800;color:${currentBal>0?'var(--rose)':'var(--emerald)'}">${fmt(Math.abs(currentBal))}</div></div>
+      </div>
+      <div class="card-body">
+        <div class="section-label" style="margin-top:0">Fee Heads</div>
+        ${heads.length?heads.map(h=>{
+          const net = h.base*(1-conc);
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+            <label class="form-check" style="flex:1">
+              <input type="checkbox" class="fee-head-cb" value="${net}" data-key="${h.key}" onchange="updateFeeTotal()"/>
+              <span style="font-size:13px">${h.label}${conc?` (${s.concession}% off)`:''}${h.key==='transport'?` 🚌`:''}</span>
+            </label>
+            <span style="font-size:14px;font-weight:700">${fmt(net)}</span>
+          </div>`;
+        }).join(''):`<div class="text-xs">No fee structure set for Class ${s.class}. <span onclick="navTo('feestructure',null)" style="color:var(--indigo);cursor:pointer">Set it up →</span></div>`}
+        <div class="divider"></div>
+        <div class="form-group"><label class="form-label">Custom Amount (₹)</label>
+          <input class="form-input" type="number" id="fee-custom-amt" placeholder="Enter any additional amount..." oninput="updateFeeTotal()"/>
+        </div>
+        <div class="form-group"><label class="form-label">Payment Mode</label>
+          <select class="form-select" id="fee-pay-mode"><option>Cash</option><option>UPI/Online</option><option>Cheque</option><option>DD</option><option>Bank Transfer</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Date</label>
+          <input class="form-input" type="date" id="fee-pay-date" value="${today()}"/>
+        </div>
+        <div class="form-group"><label class="form-label">Note (optional)</label>
+          <input class="form-input" id="fee-pay-note" placeholder="Any note..."/>
+        </div>
+        <div class="highlight" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:700">Total to Collect</span>
+            <span style="font-size:20px;font-weight:800;color:var(--indigo)" id="fee-total-display">${fmt(0)}</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="collectFee('${s.id}')">💰 Collect Fee & Generate Receipt</button>
+      </div>
+    </div>`;
+
+  document.getElementById('fee-collection-form').innerHTML = formHtml;
+  document.getElementById('fee-collection-form').style.display = '';
+}
+
+function updateFeeTotal() {
+  const cbs = document.querySelectorAll('.fee-head-cb:checked');
+  let total = Array.from(cbs).reduce((s,cb)=>s+parseFloat(cb.value||0),0);
+  const custom = parseFloat(document.getElementById('fee-custom-amt')?.value||0)||0;
+  total += custom;
+  const el = document.getElementById('fee-total-display');
+  if(el) el.textContent = fmt(total);
+}
+
+function collectFee(studentId) {
+  const cbs = document.querySelectorAll('.fee-head-cb:checked');
+  const custom = parseFloat(document.getElementById('fee-custom-amt')?.value||0)||0;
+  let total = Array.from(cbs).reduce((s,cb)=>s+parseFloat(cb.value||0),0) + custom;
+
+  if(total<=0) { toast('Please select at least one fee head or enter amount'); return; }
+
+  const s = db.students.find(s=>s.id===studentId);
+  const receiptNo = 'RCP-'+new Date().getFullYear()+'-'+String(db.nextReceiptNum).padStart(4,'0');
+  db.nextReceiptNum++;
+
+  const feeHeads = {};
+  cbs.forEach(cb=>{ feeHeads[cb.dataset.key]=parseFloat(cb.value); });
+  if(custom) feeHeads.custom=custom;
+
+  const record = {
+    id:uid(), studentId, amount:total, feeHeads,
+    date:document.getElementById('fee-pay-date').value||today(),
+    receiptNo, payMode:document.getElementById('fee-pay-mode').value,
+    note:document.getElementById('fee-pay-note').value,
+    isPaid:true, createdAt:Date.now(),
+  };
+  db.feeRecords.push(record);
+  logActivity(`Fee collected: ${fmt(total)} from ${s?.firstName} ${s?.lastName} | ${receiptNo}`);
+  saveDB();
+  toast('Fee collected! Generating receipt...');
+  showReceipt(record.id);
+  document.getElementById('fee-collection-form').style.display='none';
+  document.getElementById('fee-stu-search').value='';
+}
+
+function showReceipt(recordId) {
+  const r = db.feeRecords.find(r=>r.id===recordId);
+  const s = db.students.find(s=>s.id===r?.studentId);
+  const cfg = db.settings;
+  if(!r||!s) return;
+
+  const headsHtml = Object.entries(r.feeHeads||{}).map(([k,v])=>`
+    <tr><td style="padding:5px 8px;font-size:12px;text-transform:capitalize">${k.replace('_',' ')}</td>
+        <td style="padding:5px 8px;font-size:12px;text-align:right;font-weight:700">${fmt(v)}</td></tr>`).join('');
+
+  document.getElementById('receipt-content').innerHTML = `
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:24px;margin-bottom:4px">🏫</div>
+      <div style="font-size:17px;font-weight:800;color:var(--navy)">${cfg.schoolName}</div>
+      ${cfg.address?`<div style="font-size:11px;color:var(--text2)">${cfg.address}</div>`:''}
+      ${cfg.phone?`<div style="font-size:11px;color:var(--text2)">📞 ${cfg.phone}</div>`:''}
+    </div>
+    <div style="background:var(--navy);color:#fff;text-align:center;padding:6px;border-radius:6px;font-size:13px;font-weight:700;margin-bottom:14px">FEE RECEIPT</div>
+    <div class="two-col" style="margin-bottom:12px;font-size:13px">
+      <div><div class="text-xs">Receipt No.</div><div class="fw-700">${r.receiptNo}</div></div>
+      <div><div class="text-xs">Date</div><div class="fw-700">${fmtDate(r.date)}</div></div>
+      <div><div class="text-xs">Student Name</div><div class="fw-700">${s.firstName} ${s.lastName}</div></div>
+      <div><div class="text-xs">Admission No.</div><div class="fw-700">${s.admNo}</div></div>
+      <div><div class="text-xs">Class</div><div class="fw-700">Class ${s.class}-${s.section||'A'}</div></div>
+      <div><div class="text-xs">Payment Mode</div><div class="fw-700">${r.payMode||'Cash'}</div></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:13px">
+      <thead><tr style="background:var(--navy3)"><th style="padding:6px 8px;text-align:left;color:var(--navy);font-size:11px">Fee Head</th><th style="padding:6px 8px;text-align:right;color:var(--navy);font-size:11px">Amount</th></tr></thead>
+      <tbody>${headsHtml}</tbody>
+      <tfoot><tr style="background:var(--indigo2)"><td style="padding:8px;font-weight:800;font-size:14px">TOTAL</td><td style="padding:8px;text-align:right;font-weight:800;font-size:16px;color:var(--indigo)">${fmt(r.amount)}</td></tr></tfoot>
+    </table>
+    ${r.note?`<div style="font-size:12px;color:var(--text2);margin-bottom:12px">Note: ${r.note}</div>`:''}
+    <div style="text-align:center;font-size:11px;color:var(--text3);border-top:1px dashed var(--border);padding-top:10px">Thank you! Keep this receipt for your records.</div>
+    <div class="btn-group mt-12">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-receipt')">Close</button>
+      <button class="btn btn-navy" style="flex:1" onclick="printReceipt('${r.id}')">🖨 Print</button>
+    </div>
+  `;
+  openModal('modal-receipt');
+}
+
+function printReceipt(recordId) {
+  const r = db.feeRecords.find(r=>r.id===recordId);
+  const s = db.students.find(s=>s.id===r?.studentId);
+  const cfg = db.settings;
+  if(!r||!s) return;
+  const headsHtml = Object.entries(r.feeHeads||{}).map(([k,v])=>`<tr><td style="padding:4px;text-transform:capitalize;font-size:11px">${k}</td><td style="padding:4px;text-align:right;font-size:11px">${fmt(v)}</td></tr>`).join('');
+  document.getElementById('print-area').innerHTML=`
+    <div style="max-width:320px;margin:0 auto;padding:10px;font-family:monospace">
+      <div style="text-align:center"><div style="font-weight:bold;font-size:14px">${cfg.schoolName}</div>
+      ${cfg.address?`<div style="font-size:10px">${cfg.address}</div>`:''}
+      <div style="font-size:10px">Ph: ${cfg.phone||''}</div></div>
+      <div style="border-top:1px dashed #000;border-bottom:1px dashed #000;margin:6px 0;padding:4px 0;text-align:center;font-weight:bold">FEE RECEIPT</div>
+      <div style="font-size:11px"><b>Receipt No:</b> ${r.receiptNo}</div>
+      <div style="font-size:11px"><b>Date:</b> ${fmtDate(r.date)}</div>
+      <div style="font-size:11px"><b>Student:</b> ${s.firstName} ${s.lastName}</div>
+      <div style="font-size:11px"><b>Adm No:</b> ${s.admNo} | Class: ${s.class}</div>
+      <div style="font-size:11px"><b>Mode:</b> ${r.payMode||'Cash'}</div>
+      <div style="border-top:1px dashed #000;margin:6px 0"></div>
+      <table style="width:100%">${headsHtml}</table>
+      <div style="border-top:1px dashed #000;margin:4px 0;padding:4px 0;display:flex;justify-content:space-between;font-weight:bold">
+        <span>TOTAL</span><span>${fmt(r.amount)}</span>
+      </div>
+      <div style="text-align:center;font-size:10px;margin-top:8px">Thank you!</div>
+    </div>`;
+  window.print();
+}
+
+function renderFeeHistory() {
+  const q=(document.getElementById('fee-hist-search').value||'').toLowerCase();
+  const records = db.feeRecords.filter(r=>r.isPaid).sort((a,b)=>b.date.localeCompare(a.date));
+  const fl = document.getElementById('fee-history-list');
+  const filtered = records.filter(r=>{
+    const s=db.students.find(s=>s.id===r.studentId);
+    return !q || `${s?.firstName} ${s?.lastName} ${r.receiptNo}`.toLowerCase().includes(q);
+  });
+  if(!filtered.length) { fl.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No records found</div></div>`; return; }
+  fl.innerHTML = filtered.slice(0,50).map(r=>{
+    const s=db.students.find(s=>s.id===r.studentId);
+    return `<div class="list-item">
+      <div class="list-info"><div class="list-name">${s?`${s.firstName} ${s.lastName}`:'Unknown'}</div>
+        <div class="list-sub">${r.receiptNo} | ${fmtDate(r.date)} | ${r.payMode||'Cash'}</div></div>
+      <div class="list-right">
+        <div style="font-size:14px;font-weight:800;color:var(--emerald)">${fmt(r.amount)}</div>
+        <button class="btn btn-ghost btn-xs" style="margin-top:4px" onclick="showReceipt('${r.id}')">Receipt</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderFeeDefaulters() {
+  const defaulters = getDefaulters();
+  const dl = document.getElementById('fee-defaulters-list');
+  if(!defaulters.length) { dl.innerHTML=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">No defaulters!</div><div class="empty-desc">All fees are collected</div></div>`; return; }
+  dl.innerHTML = `<div class="highlight rose" style="margin-bottom:12px">
+    <div class="fw-700">${defaulters.length} students with pending fees</div>
+    <div class="text-xs">Total pending: ${fmt(defaulters.reduce((s,d)=>s+d.pending,0))}</div>
+  </div>` + defaulters.map(d=>`<div class="list-item">
+    <div class="list-avatar" style="background:var(--rose2);color:var(--rose)">${initials(d.name)}</div>
+    <div class="list-info"><div class="list-name">${d.name}</div><div class="list-sub">Class ${d.class} | ${d.admNo} | ${d.phone||''}</div></div>
+    <div class="list-right">
+      <div style="font-size:14px;font-weight:800;color:var(--rose)">${fmt(d.pending)}</div>
+      <button class="btn btn-primary btn-xs" style="margin-top:4px" onclick="quickCollectFee('${d.id}')">Collect</button>
+    </div>
+  </div>`).join('');
+}
+
+function getDefaulters() {
+  const balances = computeStudentBalances();
+  return db.students.filter(s=>s.status==='active'&&(balances[s.id]||0)>0).map(s=>({
+    id:s.id, name:`${s.firstName} ${s.lastName}`, class:s.class, admNo:s.admNo,
+    phone:s.phone, pending:balances[s.id]||0
+  })).sort((a,b)=>b.pending-a.pending);
+}
+
+function computeStudentBalances() {
+  const bal = {};
+  db.feeRecords.filter(r=>r.isPaid).forEach(r=>{ bal[r.studentId]=(bal[r.studentId]||0)-parseFloat(r.amount||0); });
+  return bal;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEE STRUCTURE
+// ═══════════════════════════════════════════════════════════════
+function renderFeeStructure() {
+  const classes = getClasses();
+  const el = document.getElementById('fee-structure-list');
+  el.innerHTML = classes.map(cls=>{
+    const fs = db.feeStructure[cls]||{};
+    return `<div class="card" style="margin-bottom:10px">
+      <div class="card-header"><div class="card-title">Class ${cls}</div></div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Tuition (Monthly) ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="tuition" value="${fs.tuition||''}" placeholder="0"/></div>
+          <div class="form-group"><label class="form-label">Admission Fee ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="admission" value="${fs.admission||''}" placeholder="0"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Annual Charges ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="annual" value="${fs.annual||''}" placeholder="0"/></div>
+          <div class="form-group"><label class="form-label">Exam Fee ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="exam" value="${fs.exam||''}" placeholder="0"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Library Fee ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="library" value="${fs.library||''}" placeholder="0"/></div>
+          <div class="form-group"><label class="form-label">Sports Fee ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="sports" value="${fs.sports||''}" placeholder="0"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Computer Lab ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="computer" value="${fs.computer||''}" placeholder="0"/></div>
+          <div class="form-group"><label class="form-label">Development Fund ₹</label><input class="form-input fs-input" type="number" data-class="${cls}" data-key="dev" value="${fs.dev||''}" placeholder="0"/></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveFeeStructure() {
+  document.querySelectorAll('.fs-input').forEach(inp=>{
+    const cls = inp.dataset.class;
+    const key = inp.dataset.key;
+    const val = parseFloat(inp.value)||0;
+    if(!db.feeStructure[cls]) db.feeStructure[cls]={};
+    db.feeStructure[cls][key] = val;
+  });
+  saveDB(); toast('Fee structures saved!'); logActivity('Fee structures updated');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ATTENDANCE
+// ═══════════════════════════════════════════════════════════════
+let attStudentMap = {};
+
+function initAttendance() {
+  const classes = getClasses();
+  const attClass = document.getElementById('att-class');
+  attClass.innerHTML = '<option value="">Select Class</option>' + classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+  document.getElementById('att-date').value = today();
+  const repClass = document.getElementById('att-rep-class');
+  repClass.innerHTML = '<option value="">All Classes</option>' + classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+  document.getElementById('att-rep-month').value = thisMonth();
+  loadAttendanceStudents();
+}
+
+function loadAttendanceStudents() {
+  const cls = document.getElementById('att-class').value;
+  const sec = document.getElementById('att-section').value;
+  const dt  = document.getElementById('att-date').value;
+  if(!cls||!dt) { document.getElementById('att-student-list').innerHTML=''; document.getElementById('att-save-btn').innerHTML=''; return; }
+
+  const students = activeStudents().filter(s=>s.class===cls&&(s.section||'A')===sec);
+  const existing = (db.attendance[dt]||{})[cls+'-'+sec]||{};
+  attStudentMap = {};
+  students.forEach(s=>{ attStudentMap[s.id] = existing[s.id]||''; });
+
+  if(!students.length) {
+    document.getElementById('att-student-list').innerHTML=`<div class="empty"><div class="empty-icon">👨‍🎓</div><div class="empty-title">No students in Class ${cls}-${sec}</div></div>`;
+    document.getElementById('att-save-btn').innerHTML=''; return;
+  }
+
+  renderAttList(students, dt, cls, sec);
+  document.getElementById('att-save-btn').innerHTML=`<button class="btn btn-primary btn-block" onclick="saveAttendance('${dt}','${cls}','${sec}')">💾 Save Attendance</button>`;
+}
+
+function renderAttList(students, dt, cls, sec) {
+  const existing = (db.attendance[dt]||{})[cls+'-'+sec]||{};
+  document.getElementById('att-student-list').innerHTML = students.map(s=>{
+    const status = existing[s.id]||attStudentMap[s.id]||'';
+    return `<div class="list-item" style="padding:10px 12px">
+      <div class="list-info">
+        <div class="list-name" style="font-size:13px">${s.firstName} ${s.lastName}</div>
+        <div class="list-sub">${s.admNo} | Roll: ${s.roll||'-'}</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        ${['P','A','L','H'].map(st=>`<button class="att-day ${status===st?`att-${st.toLowerCase()} fw-700`:''}" style="width:34px;height:34px" onclick="setAtt('${s.id}','${st}',this)">${st}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setAtt(studentId, status, btn) {
+  attStudentMap[studentId] = status;
+  const row = btn.closest('.list-item');
+  row.querySelectorAll('.att-day').forEach(b=>{ b.className='att-day'; });
+  btn.className=`att-day att-${status.toLowerCase()} fw-700`;
+}
+
+function markAllPresent() {
+  Object.keys(attStudentMap).forEach(id=>attStudentMap[id]='P');
+  document.querySelectorAll('#att-student-list .list-item').forEach(row=>{
+    row.querySelectorAll('.att-day').forEach((b,i)=>{ b.className='att-day'+(i===0?' att-p fw-700':''); });
+  });
+}
+function markAllAbsent() {
+  Object.keys(attStudentMap).forEach(id=>attStudentMap[id]='A');
+  document.querySelectorAll('#att-student-list .list-item').forEach(row=>{
+    row.querySelectorAll('.att-day').forEach((b,i)=>{ b.className='att-day'+(i===1?' att-a fw-700':''); });
+  });
+}
+function markHoliday() {
+  Object.keys(attStudentMap).forEach(id=>attStudentMap[id]='H');
+  document.querySelectorAll('#att-student-list .list-item').forEach(row=>{
+    row.querySelectorAll('.att-day').forEach((b,i)=>{ b.className='att-day'+(i===3?' att-h fw-700':''); });
+  });
+}
+
+function saveAttendance(dt, cls, sec) {
+  if(!db.attendance[dt]) db.attendance[dt]={};
+  db.attendance[dt][cls+'-'+sec] = {...attStudentMap};
+  saveDB();
+  toast('Attendance saved!');
+  logActivity(`Attendance marked: Class ${cls}-${sec} on ${fmtDate(dt)}`);
+}
+
+function generateAttReport() {
+  const cls = document.getElementById('att-rep-class').value;
+  const month = document.getElementById('att-rep-month').value;
+  if(!month) { toast('Please select a month'); return; }
+
+  const students = activeStudents().filter(s=>!cls||s.class===cls);
+  const dates = Object.keys(db.attendance).filter(d=>d.startsWith(month)).sort();
+
+  if(!dates.length) { document.getElementById('att-report-output').innerHTML='<div class="text-xs" style="padding:10px">No attendance data for selected period</div>'; return; }
+
+  const rows = students.map(s=>{
+    const sec = s.section||'A';
+    let p=0,a=0,l=0,h=0,total=0;
+    dates.forEach(dt=>{
+      const dayAtt = (db.attendance[dt]||{})[(s.class||'')+'-'+sec]||{};
+      const st = dayAtt[s.id];
+      if(st==='P'){p++;total++;}else if(st==='A'){a++;total++;}else if(st==='L'){l++;total++;}else if(st==='H'){h++;}
+    });
+    const pct = total>0?Math.round(p/total*100):0;
+    return `<tr><td>${s.firstName} ${s.lastName}</td><td>${s.admNo}</td><td>Class ${s.class}</td>
+      <td style="color:var(--emerald);font-weight:700">${p}</td>
+      <td style="color:var(--rose);font-weight:700">${a}</td>
+      <td style="color:var(--gold);font-weight:700">${l}</td>
+      <td><span style="font-weight:800;color:${pct<75?'var(--rose)':'var(--emerald)'}">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('att-report-output').innerHTML=`
+    <div class="card"><div class="card-body">
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">Attendance Report — ${month} ${cls?'| Class '+cls:''}</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Student</th><th>Adm. No</th><th>Class</th><th>P</th><th>A</th><th>L</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXAMS
+// ═══════════════════════════════════════════════════════════════
+function examTab(tab, el) {
+  document.getElementById('exam-list-panel').style.display = tab==='list'?'':'none';
+  document.getElementById('exam-marks-panel').style.display = tab==='marks'?'':'none';
+  document.getElementById('exam-results-panel').style.display = tab==='results'?'':'none';
+  document.querySelectorAll('#page-exams .tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(tab==='marks') populateExamDropdowns();
+  if(tab==='results') populateResultDropdowns();
+}
+
+function openExamModal() {
+  document.getElementById('exam-name').onchange = function(){
+    document.getElementById('exam-custom-name-grp').style.display = this.value==='Custom'?'':'none';
+  };
+  openModal('modal-exam');
+}
+
+function saveExam() {
+  let name = document.getElementById('exam-name').value;
+  if(name==='Custom') name = document.getElementById('exam-custom-name').value.trim();
+  if(!name) { toast('Exam name required'); return; }
+  db.exams.push({
+    id:uid(), name, startDate:document.getElementById('exam-start').value,
+    endDate:document.getElementById('exam-end').value,
+    classes:document.getElementById('exam-classes').value,
+    maxMarks:parseInt(document.getElementById('exam-max').value)||100,
+    passMarks:parseInt(document.getElementById('exam-pass').value)||33,
+    createdAt:Date.now()
+  });
+  saveDB(); closeModal('modal-exam'); renderExams(); toast('Exam created!');
+  logActivity(`Exam created: ${name}`);
+}
+
+function renderExams() {
+  const el = document.getElementById('exams-list');
+  if(!db.exams.length) { el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No exams created</div><div class="empty-desc">Click + to create an exam</div></div>`; return; }
+  el.innerHTML = db.exams.sort((a,b)=>b.createdAt-a.createdAt).map(e=>`
+    <div class="list-item">
+      <div class="list-avatar" style="background:var(--violet2);color:var(--violet);font-size:18px">📋</div>
+      <div class="list-info"><div class="list-name">${e.name}</div>
+        <div class="list-sub">${fmtDate(e.startDate)} — ${fmtDate(e.endDate)} | Max: ${e.maxMarks} | Pass: ${e.passMarks}</div>
+      </div>
+      <button class="btn btn-rose btn-xs" onclick="deleteExam('${e.id}')">🗑</button>
+    </div>`).join('');
+}
+
+function deleteExam(id) {
+  confirm('Delete Exam?','All marks for this exam will also be deleted.',()=>{
+    db.exams=db.exams.filter(e=>e.id!==id);
+    delete db.marks[id];
+    saveDB(); renderExams(); toast('Exam deleted');
+  });
+}
+
+function populateExamDropdowns() {
+  const classes = getClasses();
+  const mel = document.getElementById('marks-exam');
+  const cel = document.getElementById('marks-class');
+  mel.innerHTML='<option value="">Choose exam...</option>'+db.exams.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  cel.innerHTML='<option value="">Select</option>'+classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+}
+
+function loadMarksForm() {
+  const examId=document.getElementById('marks-exam').value;
+  const cls=document.getElementById('marks-class').value;
+  const sub=document.getElementById('marks-subject').value;
+  if(!examId||!cls) { document.getElementById('marks-form').innerHTML=''; return; }
+
+  const exam=db.exams.find(e=>e.id===examId);
+  const students=activeStudents().filter(s=>s.class===cls);
+
+  // Auto-populate subjects based on class (simplified)
+  const subjects=['Hindi','English','Mathematics','Science','Social Science','Sanskrit','Computer','Art'];
+  document.getElementById('marks-subject').innerHTML='<option value="">Select</option>'+subjects.map(s=>`<option>${s}</option>`).join('');
+
+  if(!sub||!students.length) return;
+
+  const existing=(db.marks[examId]||{})[cls]||{};
+  document.getElementById('marks-form').innerHTML=`
+    <div class="card"><div class="card-header"><div class="card-title">Marks: ${exam?.name} | Class ${cls} | ${sub}</div></div>
+    <div class="card-body">
+      ${students.map(s=>{
+        const prev=(existing[s.id]||{})[sub]||'';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="flex:1;font-size:13px;font-weight:600">${s.firstName} ${s.lastName}</span>
+          <input type="number" class="marks-input" data-stu="${s.id}" value="${prev}" placeholder="Marks" min="0" max="${exam?.maxMarks||100}" style="width:80px;padding:6px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;text-align:center"/>
+          <select class="marks-status" data-stu="${s.id}" style="width:80px;padding:6px;border:1.5px solid var(--border);border-radius:6px;font-size:12px">
+            <option value="present" ${prev!=='absent'?'selected':''}>Present</option>
+            <option value="absent" ${prev==='absent'?'selected':''}>Absent</option>
+          </select>
+        </div>`;
+      }).join('')}
+      <button class="btn btn-primary btn-block" style="margin-top:12px" onclick="saveMarks('${examId}','${cls}','${sub}')">Save Marks</button>
+    </div></div>`;
+}
+
+function saveMarks(examId, cls, subject) {
+  if(!db.marks[examId]) db.marks[examId]={};
+  if(!db.marks[examId][cls]) db.marks[examId][cls]={};
+  document.querySelectorAll('.marks-input').forEach(inp=>{
+    const stuId=inp.dataset.stu;
+    const status=document.querySelector(`.marks-status[data-stu="${stuId}"]`)?.value;
+    if(!db.marks[examId][cls][stuId]) db.marks[examId][cls][stuId]={};
+    db.marks[examId][cls][stuId][subject] = status==='absent'?'absent':parseFloat(inp.value)||0;
+  });
+  saveDB(); toast('Marks saved!'); logActivity(`Marks saved: ${subject} | Class ${cls}`);
+}
+
+function populateResultDropdowns() {
+  const classes=getClasses();
+  document.getElementById('res-exam').innerHTML='<option value="">Select</option>'+db.exams.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('res-class').innerHTML='<option value="">Select</option>'+classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+}
+
+function generateResults() {
+  const examId=document.getElementById('res-exam').value;
+  const cls=document.getElementById('res-class').value;
+  if(!examId||!cls) { toast('Select exam and class'); return; }
+  const exam=db.exams.find(e=>e.id===examId);
+  const students=activeStudents().filter(s=>s.class===cls);
+  const classMarks=(db.marks[examId]||{})[cls]||{};
+  const subjects=['Hindi','English','Mathematics','Science','Social Science'];
+
+  const results=students.map(s=>{
+    const stuMarks=classMarks[s.id]||{};
+    let total=0,maxTotal=0,count=0;
+    subjects.forEach(sub=>{
+      const m=stuMarks[sub];
+      if(m!==undefined&&m!=='absent'){total+=parseFloat(m)||0;maxTotal+=exam?.maxMarks||100;count++;}
+    });
+    const pct=maxTotal>0?Math.round(total/maxTotal*100):0;
+    const grade=pct>=90?'A+':pct>=80?'A':pct>=70?'B+':pct>=60?'B':pct>=50?'C':pct>=40?'D':'F';
+    return {...s,total,maxTotal,pct,grade,pass:pct>=(exam?.passMarks/exam?.maxMarks*100||33),stuMarks};
+  }).sort((a,b)=>b.pct-a.pct).map((s,i)=>({...s,rank:i+1}));
+
+  document.getElementById('results-output').innerHTML=`
+    <div class="card"><div class="card-header"><div class="card-title">${exam?.name} — Class ${cls} Results</div></div>
+    <div class="card-body">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Rank</th><th>Student</th><th>Total</th><th>%</th><th>Grade</th><th>Status</th></tr></thead>
+        <tbody>${results.map(r=>`<tr>
+          <td><strong>${r.rank}</strong></td>
+          <td>${r.firstName} ${r.lastName}</td>
+          <td>${r.total}/${r.maxTotal}</td>
+          <td><strong style="color:${r.pct>=33?'var(--emerald)':'var(--rose)'}">${r.pct}%</strong></td>
+          <td><span class="badge badge-${r.grade==='F'?'rose':r.grade.includes('A')?'emerald':'sky'}">${r.grade}</span></td>
+          <td><span class="badge badge-${r.pass?'emerald':'rose'}">${r.pass?'PASS':'FAIL'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TEACHERS
+// ═══════════════════════════════════════════════════════════════
+function renderTeachers() {
+  const q=(document.getElementById('tch-search').value||'').toLowerCase();
+  const teachers=db.teachers.filter(t=>t.status!=='inactive'&&(!q||`${t.firstName} ${t.lastName} ${t.phone}`.toLowerCase().includes(q)));
+  const tl=document.getElementById('teachers-list');
+  if(!teachers.length) {
+    tl.innerHTML=`<div class="empty"><div class="empty-icon">👩‍🏫</div><div class="empty-title">No teachers added</div></div><button class="btn btn-primary btn-block" onclick="openTeacherModal()">+ Add Teacher</button>`;
+    return;
+  }
+  tl.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div class="text-xs">${teachers.length} teachers</div>
+    <button class="btn btn-primary btn-sm" onclick="openTeacherModal()">+ Add Teacher</button>
+  </div>`+teachers.map(t=>`<div class="list-item">
+    <div class="list-avatar" style="background:var(--navy);color:#fff">${initials(t.firstName+' '+t.lastName)}</div>
+    <div class="list-info"><div class="list-name">${t.firstName} ${t.lastName}</div>
+      <div class="list-sub">${t.subjects||''} ${t.classTeacher?'| Class Teacher: Cl.'+t.classTeacher:''}</div></div>
+    <div class="list-right">
+      <div style="font-size:13px;font-weight:700;color:var(--emerald)">${fmt(t.salary)}/mo</div>
+      <div class="btn-group mt-4" style="margin-top:4px;gap:4px">
+        <button class="btn btn-ghost btn-xs" onclick="editTeacher('${t.id}')">✏️</button>
+        <button class="btn btn-rose btn-xs" onclick="deleteTeacher('${t.id}')">🗑</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+function openTeacherModal(id=null) {
+  const classes=getClasses();
+  document.getElementById('tch-class-teacher').innerHTML='<option value="">Not a class teacher</option>'+classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('');
+  if(!id) {
+    ['tch-fname','tch-lname','tch-phone','tch-qual','tch-subjects','tch-salary','tch-id'].forEach(el=>{ document.getElementById(el).value=''; });
+    document.getElementById('tch-join').value=today();
+    document.getElementById('modal-tch-title').textContent='Add Teacher';
+  }
+  openModal('modal-teacher');
+}
+
+function editTeacher(id) {
+  const t=db.teachers.find(t=>t.id===id);
+  if(!t) return;
+  openTeacherModal(id);
+  setTimeout(()=>{
+    document.getElementById('tch-id').value=t.id;
+    document.getElementById('tch-fname').value=t.firstName||'';
+    document.getElementById('tch-lname').value=t.lastName||'';
+    document.getElementById('tch-phone').value=t.phone||'';
+    document.getElementById('tch-gender').value=t.gender||'Male';
+    document.getElementById('tch-qual').value=t.qual||'';
+    document.getElementById('tch-subjects').value=t.subjects||'';
+    document.getElementById('tch-class-teacher').value=t.classTeacher||'';
+    document.getElementById('tch-join').value=t.joinDate||today();
+    document.getElementById('tch-salary').value=t.salary||'';
+    document.getElementById('modal-tch-title').textContent='Edit Teacher';
+  },100);
+}
+
+function saveTeacher() {
+  const fname=document.getElementById('tch-fname').value.trim();
+  const lname=document.getElementById('tch-lname').value.trim();
+  const phone=document.getElementById('tch-phone').value.trim();
+  if(!fname||!lname) { toast('Name required'); return; }
+  const id=document.getElementById('tch-id').value;
+  const tData={
+    firstName:fname, lastName:lname, phone, gender:document.getElementById('tch-gender').value,
+    qual:document.getElementById('tch-qual').value.trim(),
+    subjects:document.getElementById('tch-subjects').value.trim(),
+    classTeacher:document.getElementById('tch-class-teacher').value,
+    joinDate:document.getElementById('tch-join').value,
+    salary:parseFloat(document.getElementById('tch-salary').value)||0,
+    status:'active'
+  };
+  if(id) { const idx=db.teachers.findIndex(t=>t.id===id); if(idx>=0) db.teachers[idx]={...db.teachers[idx],...tData}; }
+  else { db.teachers.push({id:uid(),...tData,empId:'EMP-'+String(++db.nextTchNum).padStart(3,'0'),createdAt:Date.now()}); }
+  saveDB(); closeModal('modal-teacher'); renderTeachers(); toast('Teacher saved!');
+  logActivity(`Teacher ${id?'updated':'added'}: ${fname} ${lname}`);
+}
+
+function deleteTeacher(id) {
+  const t=db.teachers.find(t=>t.id===id);
+  confirm('Delete Teacher?',`Remove ${t?.firstName} ${t?.lastName}?`,()=>{
+    db.teachers=db.teachers.filter(t=>t.id!==id); saveDB(); renderTeachers(); toast('Teacher deleted');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SALARY
+// ═══════════════════════════════════════════════════════════════
+function generateSalary() {
+  const month=document.getElementById('sal-month').value;
+  if(!month) { toast('Select a month'); return; }
+  const teachers=db.teachers.filter(t=>t.status!=='active'||true);
+  if(!teachers.length) { document.getElementById('salary-output').innerHTML='<div class="text-xs">No teachers added</div>'; return; }
+  const total=teachers.reduce((s,t)=>s+parseFloat(t.salary||0),0);
+  document.getElementById('salary-output').innerHTML=`
+    <div class="highlight gold" style="margin-bottom:12px">
+      <div class="text-xs">Total Salary for ${month}</div>
+      <div style="font-size:20px;font-weight:800">${fmt(total)}</div>
+    </div>
+    <div class="card"><div class="card-body">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Emp ID</th><th>Name</th><th>Subjects</th><th>Salary</th><th>Status</th></tr></thead>
+        <tbody>${teachers.map(t=>`<tr>
+          <td>${t.empId||'-'}</td>
+          <td>${t.firstName} ${t.lastName}</td>
+          <td style="font-size:11px">${t.subjects||'-'}</td>
+          <td><strong style="color:var(--emerald)">${fmt(t.salary)}</strong></td>
+          <td><span class="badge badge-emerald">Pending</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TRANSPORT
+// ═══════════════════════════════════════════════════════════════
+function transTab(tab, el) {
+  document.getElementById('trans-routes-panel').style.display=tab==='routes'?'':'none';
+  document.getElementById('trans-students-panel').style.display=tab==='students'?'':'none';
+  document.querySelectorAll('#page-transport .tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(tab==='students') { populateRouteFilter(); renderTransportStudents(); }
+}
+
+function openRouteModal(id=null) {
+  ['route-name','route-bus','route-driver','route-driver-phone','route-stops','route-fee','route-capacity','route-id'].forEach(el=>{ document.getElementById(el).value=''; });
+  if(id) {
+    const r=db.routes.find(r=>r.id===id);
+    if(r) {
+      document.getElementById('route-id').value=r.id;
+      document.getElementById('route-name').value=r.name||'';
+      document.getElementById('route-bus').value=r.bus||'';
+      document.getElementById('route-driver').value=r.driver||'';
+      document.getElementById('route-driver-phone').value=r.driverPhone||'';
+      document.getElementById('route-stops').value=(r.stops||[]).join(', ');
+      document.getElementById('route-fee').value=r.fee||'';
+      document.getElementById('route-capacity').value=r.capacity||'';
+      document.getElementById('modal-route-title').textContent='Edit Route';
+    }
+  }
+  openModal('modal-route');
+}
+
+function saveRoute() {
+  const name=document.getElementById('route-name').value.trim();
+  if(!name) { toast('Route name required'); return; }
+  const id=document.getElementById('route-id').value;
+  const rData={
+    name, bus:document.getElementById('route-bus').value.trim(),
+    driver:document.getElementById('route-driver').value.trim(),
+    driverPhone:document.getElementById('route-driver-phone').value.trim(),
+    stops:(document.getElementById('route-stops').value||'').split(',').map(s=>s.trim()).filter(Boolean),
+    fee:parseFloat(document.getElementById('route-fee').value)||0,
+    capacity:parseInt(document.getElementById('route-capacity').value)||40,
+  };
+  if(id) { const idx=db.routes.findIndex(r=>r.id===id); if(idx>=0) db.routes[idx]={...db.routes[idx],...rData}; }
+  else db.routes.push({id:uid(),...rData,createdAt:Date.now()});
+  saveDB(); closeModal('modal-route'); renderRoutes(); toast('Route saved!');
+  logActivity(`Transport route ${id?'updated':'added'}: ${name}`);
+}
+
+function renderRoutes() {
+  const rl=document.getElementById('routes-list');
+  if(!db.routes.length) { rl.innerHTML=`<div class="empty"><div class="empty-icon">🚌</div><div class="empty-title">No routes added</div></div>`; return; }
+  rl.innerHTML=db.routes.map(r=>{
+    const stuCount=db.students.filter(s=>s.transport&&s.routeId===r.id).length;
+    return `<div class="card" style="margin-bottom:10px">
+      <div class="card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+          <div><div class="fw-700" style="font-size:15px">🚌 ${r.name}</div><div class="text-xs">${r.bus||''} | Driver: ${r.driver||'-'} ${r.driverPhone?'('+r.driverPhone+')':''}</div></div>
+          <div class="btn-group"><button class="btn btn-ghost btn-xs" onclick="openRouteModal('${r.id}')">✏️</button></div>
+        </div>
+        <div class="two-col">
+          <div><div class="text-xs">Monthly Fee</div><div class="fw-700" style="color:var(--gold)">${fmt(r.fee)}</div></div>
+          <div><div class="text-xs">Students</div><div class="fw-700">${stuCount} / ${r.capacity}</div></div>
+        </div>
+        ${r.stops?.length?`<div class="text-xs" style="margin-top:6px">Stops: ${r.stops.join(' → ')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function populateRouteFilter() {
+  const el=document.getElementById('trans-stu-route');
+  el.innerHTML='<option value="all">All Routes</option>'+db.routes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+}
+
+function renderTransportStudents() {
+  const routeFilter=document.getElementById('trans-stu-route').value;
+  const students=db.students.filter(s=>s.status==='active'&&s.transport&&(routeFilter==='all'||s.routeId===routeFilter));
+  const tsl=document.getElementById('transport-students-list');
+  if(!students.length) { tsl.innerHTML=`<div class="empty"><div class="empty-icon">🚌</div><div class="empty-title">No transport students</div></div>`; return; }
+  tsl.innerHTML=`<div class="text-xs mb-8" style="margin-bottom:8px">${students.length} students availing transport</div>`+
+  students.map(s=>`<div class="list-item">
+    <div class="list-avatar" style="background:var(--sky2);color:var(--sky)">🚌</div>
+    <div class="list-info"><div class="list-name">${s.firstName} ${s.lastName}</div>
+      <div class="list-sub">Class ${s.class} | ${s.routeName||''} | Stop: ${s.busStop||'-'}</div></div>
+    <div class="list-right"><div style="font-size:13px;font-weight:700;color:var(--gold)">${fmt(s.routeFee)}/mo</div></div>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// READMISSION
+// ═══════════════════════════════════════════════════════════════
+function radTab(tab, el) {
+  document.querySelectorAll('#page-readmission .tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderReadmission(tab);
+}
+
+function renderReadmission(tab='promote') {
+  const classes=getClasses();
+  const students=activeStudents();
+  const content=document.getElementById('readmission-content');
+
+  if(tab==='confirm') {
+    content.innerHTML=`<div class="card"><div class="card-body">
+      <div class="alert alert-rose" style="margin-bottom:16px"><span class="alert-icon">⚠️</span>
+        <div class="alert-text"><div class="alert-title">Confirm New Session</div>
+          This will start the new academic year. All promoted students will move to their new classes.</div></div>
+      <div class="form-group"><label class="form-label">New Session Name</label>
+        <input class="form-input" id="rad-new-session" value="${getNextSession()}" placeholder="e.g. 2025-26"/></div>
+      <button class="btn btn-primary btn-block" onclick="confirmNewSession()">✅ Start New Session</button>
+    </div></div>`;
+    return;
+  }
+
+  content.innerHTML=`
+    <div class="form-group"><label class="form-label">Select Class</label>
+      <select class="form-select" id="rad-class" onchange="renderRadStudents('${tab}')">
+        <option value="">All Classes</option>${classes.map(c=>`<option value="${c}">Class ${c}</option>`).join('')}
+      </select>
+    </div>
+    <div id="rad-student-list"></div>`;
+  renderRadStudents(tab);
+}
+
+function renderRadStudents(action) {
+  const cls=document.getElementById('rad-class')?.value;
+  const students=activeStudents().filter(s=>!cls||s.class===cls);
+  const classes=getClasses();
+  const el=document.getElementById('rad-student-list');
+  if(!students.length) { el.innerHTML='<div class="text-xs">No students</div>'; return; }
+
+  el.innerHTML=`<div class="text-xs mb-8" style="margin-bottom:8px">${students.length} students</div>`+
+  students.map(s=>{
+    const nextIdx=classes.indexOf(s.class)+1;
+    const nextClass=nextIdx<classes.length?classes[nextIdx]:'Passed Out';
+    if(action==='promote') {
+      return `<div class="list-item">
+        <div class="list-info"><div class="list-name">${s.firstName} ${s.lastName}</div>
+          <div class="list-sub">${s.class} → <strong>${nextClass}</strong></div></div>
+        <button class="btn btn-emerald btn-xs" onclick="promoteStudent('${s.id}','${nextClass}')">Promote</button>
+      </div>`;
+    } else if(action==='holdback') {
+      return `<div class="list-item">
+        <div class="list-info"><div class="list-name">${s.firstName} ${s.lastName}</div>
+          <div class="list-sub">Stays in Class ${s.class}</div></div>
+        <button class="btn btn-gold btn-xs" onclick="holdStudent('${s.id}')">Hold Back</button>
+      </div>`;
+    } else {
+      return `<div class="list-item">
+        <div class="list-info"><div class="list-name">${s.firstName} ${s.lastName}</div>
+          <div class="list-sub">Class ${s.class}</div></div>
+        <button class="btn btn-rose btn-xs" onclick="markLeft('${s.id}')">Mark Left</button>
+      </div>`;
+    }
+  }).join('');
+}
+
+function promoteStudent(id,nextClass) {
+  const s=db.students.find(s=>s.id===id);
+  if(!s) return;
+  if(nextClass==='Passed Out') { s.status='inactive'; s.leftReason='Passed Out'; }
+  else s.class=nextClass;
+  saveDB(); toast(`${s.firstName} promoted to ${nextClass}`);
+  logActivity(`Student promoted: ${s.firstName} ${s.lastName} → Class ${nextClass}`);
+  renderRadStudents('promote');
+}
+function holdStudent(id) { const s=db.students.find(s=>s.id===id); if(s){toast(`${s.firstName} held back in Class ${s.class}`);} }
+function markLeft(id) { const s=db.students.find(s=>s.id===id); if(s){s.status='inactive';s.leftReason='Left School';saveDB();toast(`${s.firstName} marked as left`);renderRadStudents('left');} }
+
+function getNextSession() {
+  const sess=db.settings.session||'2024-25';
+  const parts=sess.split('-');
+  if(parts.length===2) return `${parseInt(parts[0])+1}-${parseInt(parts[1])+1}`;
+  return sess;
+}
+
+function confirmNewSession() {
+  const newSess=document.getElementById('rad-new-session').value.trim();
+  if(!newSess) { toast('Enter new session name'); return; }
+  db.settings.session=newSess;
+  saveDB(); toast('New session started: '+newSess);
+  document.getElementById('sb-session').textContent='Session '+newSess;
+  logActivity('New session started: '+newSess);
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════════════════════════════════
+function initReports() {
+  const now=new Date();
+  const firstDay=new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10);
+  document.getElementById('rep-from').value=firstDay;
+  document.getElementById('rep-to').value=today();
+  document.getElementById('rep-att-month').value=thisMonth();
+}
+
+function report(type) {
+  const from=document.getElementById('rep-from').value;
+  const to=document.getElementById('rep-to').value;
+  const out=document.getElementById('report-output');
+
+  if(type==='students-all') {
+    const students=activeStudents().sort((a,b)=>a.class.localeCompare(b.class));
+    out.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">All Students (${students.length})</div><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Print</button></div><div class="card-body">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Adm. No</th><th>Name</th><th>Class</th><th>Father</th><th>Phone</th><th>Status</th></tr></thead>
+        <tbody>${students.map(s=>`<tr><td>${s.admNo}</td><td>${s.firstName} ${s.lastName}</td><td>Class ${s.class}-${s.section||'A'}</td><td>${s.fatherName||'-'}</td><td>${s.phone||'-'}</td><td><span class="badge badge-emerald">Active</span></td></tr>`).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+  } else if(type==='class-count') {
+    const classes=getClasses();
+    const students=activeStudents();
+    out.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">Class-wise Count</div></div><div class="card-body">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th></tr></thead>
+        <tbody>${classes.map(c=>{
+          const cs=students.filter(s=>s.class===c);
+          const boys=cs.filter(s=>s.gender==='Male').length;
+          const girls=cs.filter(s=>s.gender==='Female').length;
+          return `<tr><td>Class ${c}</td><td>${boys}</td><td>${girls}</td><td><strong>${cs.length}</strong></td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+  } else if(type==='fee-collection') {
+    const records=db.feeRecords.filter(r=>r.isPaid&&(!from||r.date>=from)&&(!to||r.date<=to));
+    const total=records.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+    out.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">Fee Collection (${fmtDate(from)} — ${fmtDate(to)})</div></div><div class="card-body">
+      <div class="highlight emerald" style="margin-bottom:12px"><div class="text-xs">Total Collected</div><div style="font-size:20px;font-weight:800;color:var(--emerald)">${fmt(total)}</div></div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Receipt</th><th>Student</th><th>Class</th><th>Date</th><th>Mode</th><th>Amount</th></tr></thead>
+        <tbody>${records.sort((a,b)=>b.date.localeCompare(a.date)).map(r=>{
+          const s=db.students.find(s=>s.id===r.studentId);
+          return `<tr><td>${r.receiptNo}</td><td>${s?s.firstName+' '+s.lastName:'Unknown'}</td><td>${s?'Class '+s.class:'-'}</td><td>${fmtDate(r.date)}</td><td>${r.payMode||'Cash'}</td><td><strong>${fmt(r.amount)}</strong></td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+  } else if(type==='fee-defaulters') {
+    const defaulters=getDefaulters();
+    out.innerHTML=`<div class="card"><div class="card-header"><div class="card-title">Fee Defaulters</div></div><div class="card-body">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Student</th><th>Class</th><th>Phone</th><th>Pending</th></tr></thead>
+        <tbody>${defaulters.map(d=>`<tr><td>${d.name}</td><td>Class ${d.class}</td><td>${d.phone||'-'}</td><td><strong style="color:var(--rose)">${fmt(d.pending)}</strong></td></tr>`).join('')}</tbody>
+      </table></div>
+    </div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STUDENT PORTAL
+// ═══════════════════════════════════════════════════════════════
+function portalLogin() {
+  const admNo=(document.getElementById('portal-adm-no').value||'').trim().toUpperCase();
+  const s=db.students.find(s=>s.admNo.toUpperCase()===admNo||s.admNo===admNo);
+  if(!s) { toast('Student not found. Check admission number.'); return; }
+  showPortalDashboard(s);
+}
+
+function showPortalDashboard(s) {
+  const balances=computeStudentBalances();
+  const bal=balances[s.id]||0;
+  const recentFees=db.feeRecords.filter(r=>r.studentId===s.id&&r.isPaid).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const examResults=db.exams.map(e=>{
+    const classMarks=(db.marks[e.id]||{})[s.class]||{};
+    const stuMarks=classMarks[s.id];
+    if(!stuMarks) return null;
+    const subjects=Object.keys(stuMarks);
+    const total=subjects.reduce((sum,sub)=>sum+(stuMarks[sub]==='absent'?0:parseFloat(stuMarks[sub]||0)),0);
+    const max=subjects.length*(e.maxMarks||100);
+    const pct=max>0?Math.round(total/max*100):0;
+    return `<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div class="fw-700">${e.name}</div><div class="text-xs">${fmtDate(e.startDate)} | ${total}/${max} (${pct}%)</div></div>`;
+  }).filter(Boolean).join('');
+
+  document.getElementById('portal-login').style.display='none';
+  document.getElementById('portal-dashboard').style.display='';
+  document.getElementById('portal-dashboard').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:56px;height:56px;border-radius:14px;background:${getAvatarColor(s.class)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">${initials(s.firstName+' '+s.lastName)}</div>
+      <div>
+        <div style="font-size:18px;font-weight:800">${s.firstName} ${s.lastName}</div>
+        <div class="text-sm">Class ${s.class}-${s.section||'A'} | ${s.admNo}</div>
+        <div class="text-xs">${s.fatherName?'Father: '+s.fatherName:''}</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card gold"><div class="stat-icon">💰</div>
+        <div class="stat-val" style="font-size:16px">${fmt(Math.abs(bal))}</div>
+        <div class="stat-label">${bal>0?'Fee Pending':bal<0?'Advance':'All Clear'}</div>
+      </div>
+      <div class="stat-card emerald"><div class="stat-icon">🚌</div>
+        <div class="stat-val" style="font-size:16px">${s.transport?'Yes':'No'}</div>
+        <div class="stat-label">Transport</div>
+      </div>
+    </div>
+    ${recentFees.length?`<div class="section-label">Recent Fee Payments</div>`+
+      recentFees.map(r=>`<div class="list-item"><div class="list-info"><div class="list-name">${r.receiptNo}</div><div class="list-sub">${fmtDate(r.date)} | ${r.payMode||'Cash'}</div></div>
+        <div style="font-size:14px;font-weight:800;color:var(--emerald)">${fmt(r.amount)}</div></div>`).join(''):''}
+    ${examResults?`<div class="section-label">Exam Results</div><div class="card"><div class="card-body">${examResults}</div></div>`:''}
+    <button class="btn btn-ghost btn-block mt-12" onclick="document.getElementById('portal-login').style.display='';document.getElementById('portal-dashboard').style.display='none'">← Back to Login</button>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════
+function loadSettings() {
+  const s=db.settings;
+  document.getElementById('set-school-name').value=s.schoolName||'';
+  document.getElementById('set-principal').value=s.principal||'';
+  document.getElementById('set-phone').value=s.phone||'';
+  document.getElementById('set-email').value=s.email||'';
+  document.getElementById('set-address').value=s.address||'';
+  document.getElementById('set-board').value=s.board||'CBSE';
+  document.getElementById('set-affiliation').value=s.affiliation||'';
+  document.getElementById('set-session').value=s.session||'2024-25';
+  document.getElementById('set-admin').value=s.admin||'Administrator';
+  document.getElementById('set-classes').value=s.classes||'1,2,3,4,5,6,7,8,9,10';
+}
+
+function saveSettings() {
+  db.settings={
+    schoolName:document.getElementById('set-school-name').value.trim()||'Vidyalaya School',
+    principal:document.getElementById('set-principal').value.trim(),
+    phone:document.getElementById('set-phone').value.trim(),
+    email:document.getElementById('set-email').value.trim(),
+    address:document.getElementById('set-address').value.trim(),
+    board:document.getElementById('set-board').value,
+    affiliation:document.getElementById('set-affiliation').value.trim(),
+    session:document.getElementById('set-session').value.trim()||'2024-25',
+    admin:document.getElementById('set-admin').value.trim()||'Administrator',
+    classes:document.getElementById('set-classes').value.trim()||'1,2,3,4,5,6,7,8,9,10',
+  };
+  saveDB();
+  document.getElementById('sb-school-name').textContent=db.settings.schoolName;
+  document.getElementById('sb-session').textContent='Session '+db.settings.session;
+  document.getElementById('sb-uname').textContent=db.settings.admin;
+  document.getElementById('sb-avatar').textContent=initials(db.settings.admin);
+  toast('Settings saved!');
+  logActivity('Settings updated');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TC
+// ═══════════════════════════════════════════════════════════════
+function printTC(id) {
+  const s=db.students.find(s=>s.id===id);
+  const cfg=db.settings;
+  if(!s) return;
+  document.getElementById('print-area').innerHTML=`
+    <div style="max-width:600px;margin:0 auto;padding:20px;font-family:Arial,sans-serif">
+      <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:15px">
+        <div style="font-size:20px;font-weight:bold">${cfg.schoolName}</div>
+        ${cfg.address?`<div style="font-size:12px">${cfg.address}</div>`:''}
+        <div style="font-size:14px;font-weight:bold;margin-top:8px">TRANSFER CERTIFICATE</div>
+      </div>
+      <table style="width:100%;font-size:13px">
+        <tr><td style="padding:5px;width:50%"><b>Admission No:</b> ${s.admNo}</td><td style="padding:5px"><b>Date of Issue:</b> ${fmtDate(today())}</td></tr>
+        <tr><td style="padding:5px"><b>Student Name:</b> ${s.firstName} ${s.lastName}</td><td style="padding:5px"><b>Gender:</b> ${s.gender||'-'}</td></tr>
+        <tr><td style="padding:5px"><b>Father's Name:</b> ${s.fatherName||'-'}</td><td style="padding:5px"><b>Mother's Name:</b> ${s.motherName||'-'}</td></tr>
+        <tr><td style="padding:5px"><b>Date of Birth:</b> ${fmtDate(s.dob)}</td><td style="padding:5px"><b>Category:</b> ${s.category||'-'}</td></tr>
+        <tr><td style="padding:5px"><b>Class:</b> ${s.class}</td><td style="padding:5px"><b>Section:</b> ${s.section||'A'}</td></tr>
+        <tr><td style="padding:5px"><b>Admission Date:</b> ${fmtDate(s.admDate)}</td><td style="padding:5px"><b>Date of Leaving:</b> ${fmtDate(today())}</td></tr>
+        <tr><td style="padding:5px" colspan="2"><b>Address:</b> ${s.address||'-'}</td></tr>
+      </table>
+      <div style="margin-top:40px;display:flex;justify-content:space-between">
+        <div style="text-align:center"><div style="border-top:1px solid #000;padding-top:5px;width:150px">Class Teacher</div></div>
+        <div style="text-align:center"><div style="border-top:1px solid #000;padding-top:5px;width:150px">Principal</div></div>
+      </div>
+    </div>`;
+  window.print();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════════════
+function exportData() {
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`vidyalaya-backup-${today()}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('Backup exported!');
+}
+
+function importData(ev) {
+  const file=ev.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const imp=JSON.parse(e.target.result);
+      if(!imp.students||!imp.settings) { toast('Invalid backup file'); return; }
+      db=imp; saveDB(); toast('Data imported!');
+      navTo('dashboard',null);
+    } catch { toast('Error reading file'); }
+  };
+  reader.readAsText(file);
+  ev.target.value='';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+function init() {
+  const s=db.settings;
+  document.getElementById('sb-school-name').textContent=s.schoolName||'Vidyalaya CRM';
+  document.getElementById('sb-session').textContent='Session '+(s.session||'2024-25');
+  document.getElementById('sb-uname').textContent=s.admin||'Administrator';
+  document.getElementById('sb-avatar').textContent=initials(s.admin||'Admin');
+  renderDashboard();
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw-school.js').catch(()=>{});
+}
+
+document.getElementById('exam-name').addEventListener('change',function(){
+  document.getElementById('exam-custom-name-grp').style.display=this.value==='Custom'?'':'none';
+});
+
+init();
+</script>
+</body>
+</html>
